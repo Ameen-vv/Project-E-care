@@ -25,7 +25,13 @@ const userSchema = new Schema({
     },
     profilePic:{
         type:String,
-        default:''
+    },
+    address:{
+        type:String
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now()
     }
 
 })

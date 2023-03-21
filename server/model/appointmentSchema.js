@@ -24,6 +24,10 @@ const appointmentSchema = new Schema({
     status:{
         type:String,
         default:'booked'
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now()
     }
 })
 

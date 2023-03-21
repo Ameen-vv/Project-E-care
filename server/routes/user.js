@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import {bookAppoinment, forgotPassOtp, getDepartment, getDoctors, initializePayment, resendOtp, resetPass, saveGoogleUser, sendOtp, signIn, userCheck, verifyOtpAndSignUp, verifyPayment} from '../controllers/userControllers.js'
+import {bookAppoinment, editProfile, editProfilePic, forgotPassOtp, getDepartment, getDoctors, getUserDetails, initializePayment, resendOtp, resetPass, saveGoogleUser, sendOtp, signIn, userCheck, verifyOtpAndSignUp, verifyPayment} from '../controllers/userControllers.js'
       
 import { userAuthentication } from '../middlewares/Authentications.js'
 
@@ -14,9 +14,12 @@ router.post('/resetPass',resetPass)
 router.post('/googleUserDetails',saveGoogleUser)
 router.get('/getDepartments/',getDepartment)
 router.get('/getDoctors',getDoctors)
+router.get('/getUserDetails',userAuthentication,getUserDetails)
 router.post('/bookAppoinment',userAuthentication,bookAppoinment)
 router.get('/initializePayment',userAuthentication,initializePayment)
 router.post('/verifyPayment',userAuthentication,verifyPayment)
+router.post('/editProfile',userAuthentication,editProfile)
+router.post('/editProfilePic',userAuthentication,editProfilePic)
 
 
 export default router

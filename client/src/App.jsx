@@ -35,7 +35,6 @@ function App() {
             <Route path='/doctorView' element={<DoctorPage/>}/>
         </Route>
         <Route element = {<DoctorRoutes/>}>
-        <Route path='/doctor/home' element={<DoctorHome/>}/>
         <Route path='/doctor/profile' element={<Doctor_Profile/>}/>
         </Route>
         <Route element={<AdminRoutes/>}>

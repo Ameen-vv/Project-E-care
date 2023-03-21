@@ -11,6 +11,7 @@ import { checkingSlotsAvailability } from "./helpers/helpers.js";
 import orderModel from "../model/orderSchema.js";
 import mongoose from "mongoose";
 import crypto from 'crypto'
+import cloudinary from '../utils/cloudinary.js'
 
 
 import Razorpay from "razorpay";
@@ -291,7 +292,6 @@ export const getDoctors = (req, res) => {
 
 export const bookAppoinment = (req, res) => {
     try {
-        console.log('here');
         let { date, time, doctorId } = req.body.appointment
         let newDate = new Date(date);  // create a new Date object
         newDate.setHours(newDate.getHours() + 5); // add 5 hours
@@ -299,10 +299,10 @@ export const bookAppoinment = (req, res) => {
         checkingSlotsAvailability({ newDate, doctorId, time }).then(({ available, amount }) => {
             if (available) {
                 const token = req.headers.authorization
-                appointmentModel.findOne({patientId:req.userLogged,doctorId:doctorId,date:newDate,slot:time}).then((appointment)=>{
-                    if(appointment){
-                        res.status(200).json({ available:'exist' })
-                    }else{
+                appointmentModel.findOne({ patientId: req.userLogged, doctorId: doctorId, date: newDate, slot: time }).then((appointment) => {
+                    if (appointment) {
+                        res.status(200).json({ available: 'exist' })
+                    } else {
                         let newAppointment = new appointmentModel({
                             doctorId: doctorId,
                             patientId: req.userLogged,
@@ -317,15 +317,15 @@ export const bookAppoinment = (req, res) => {
                                 amount: amount
                             })
                             newOrder.save().then((order) => {
-                                res.status(200).json({ available:'available', orderId: order._id })
+                                res.status(200).json({ available: 'available', orderId: order._id })
                             })
                         })
                     }
                 })
-                
+
 
             } else {
-                res.status(200).json({ available:'notAvailable' })
+                res.status(200).json({ available: 'notAvailable' })
             }
         })
 
@@ -339,7 +339,6 @@ export const bookAppoinment = (req, res) => {
 export const initializePayment = (req, res) => {
     try {
         const orderId = req.query.orderId
-        console.log(req.userLogged);
         orderModel.findOne({ _id: orderId }).then((order) => {
             if (order) {
                 const instance = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_SECRET })
@@ -367,18 +366,58 @@ export const verifyPayment = (req, res) => {
         var expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_SECRET)
             .update(body.toString())
             .digest('hex');
-
         if (expectedSignature === req.body.razorpay_signature) {
-            orderModel.findOneAndUpdate({_id:req.query.orderId},{$set:{status:'success',paymentId:req.body.razorpay_payment_id}}).then((result)=>{
-                appointmentModel.updateOne({_id:result.appointmentId},{$set:{paymentStatus:true}}).then((update)=>{
-                    res.status(200).json({  signatureIsValid: true })   
+            orderModel.findOneAndUpdate({ _id: req.query.orderId }, { $set: { status: 'success', paymentId: req.body.razorpay_payment_id } })
+                .then((result) => {
+                    appointmentModel.updateOne({ _id: result.appointmentId }, { $set: { paymentStatus: true } }).then(() => {
+                        res.status(200).json({ signatureIsValid: true })
+                    })
                 })
-            })
-              
-        }else{
-            res.status(200)     
+        } else {
+            res.status(200)
         }
-    }catch(err){
+    } catch (err) {
         res.status(500)
-    }          
+    }
 }
+
+
+export const getUserDetails = (req, res) => {
+    try {
+        userModel.findOne({ _id: req.userLogged }, { password: 0 }).then((user) => {
+            user ? res.status(200).json(user) : res.status(500)
+        })
+    }
+    catch (err) {
+        res.status(500)
+    }
+}
+
+
+export const editProfile = (req, res) => {
+    try {
+        const data = req.body
+        userModel.updateOne({ _id: req.userLogged }, data).then((update) => {
+            update.acknowledged ? res.status(200).json({ update: true }) : res.status(500)
+        })
+    }
+    catch (err) {
+        res.status(500)
+    }
+}
+
+
+export const editProfilePic = (req, res) => {
+    try {
+        const image = req.body.imageData
+        cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then((imageData) => {
+            userModel.updateOne({ _id: req.userLogged }, { $set: { profilePic: imageData.secure_url } }).then((result) => {
+                result.acknowledged ? res.status(200).json({ result: true }) : res.status(500)
+            })
+        })
+    }
+    catch (err) {
+        res.status(500)
+    }
+}
+

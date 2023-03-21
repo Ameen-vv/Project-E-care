@@ -66,6 +66,10 @@ const doctorSchema = new Schema({
     },
     profilePic:{
         type:String
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now()
     }
 
 })

@@ -1,15 +1,14 @@
-.save-button{
-    background-color:#0AB3B8;
+.active-nav{
+    background-color: #0AB3B8;
+    color: white;
 }
-.save-button:hover{
+.doctor-profile-nav:hover{
     background-color: #66A1FD;
 }
-.active-link{
+.active-nav:hover{
     background-color: #66A1FD;
-    color: #fff;
-    border-radius: 10px;
+    
 }
-.active-link:hover{
-    background-color: #fff;    
-    color: darkblue;
+.doctor-profile-nav{
+    width: 100%;
 }

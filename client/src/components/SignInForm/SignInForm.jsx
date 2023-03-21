@@ -60,7 +60,7 @@ const SignInForm = () => {
             if(response.data.status === 'success'){
                 localStorage.setItem('doctorToken',response.data.token)
                 setUser('doctor')
-                Navigate('/doctor/home')
+                Navigate('/doctor/profile')
             }
             response.data.status === 'pending' && Navigate('/doctor/verification')
             response.data.status === 'rejected' && Navigate('/doctor/rejected',{state:{id:response.data.id}})

@@ -213,14 +213,8 @@ export const getDepartment = (req, res) => {
 export const getDocDetails = (req, res) => {
     let token = req.headers.authorization
     try {
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, result) => {
-            if (err) {
-                res.status(500)
-            } else {
-                doctorModel.findOne({ _id: result.doctorId }).populate('department').then((doctor) => {
-                    res.status(200).json(doctor)
-                })
-            }
+        doctorModel.findOne({ _id: req.doctorLogged }).populate('department').then((doctor) => {
+            res.status(200).json(doctor)
         })
     }
     catch (err) {
@@ -233,16 +227,9 @@ export const editProfile = (req, res) => {
     try {
         let response = {}
         let details = req.body.doctorData
-        let token = req.headers.authorization
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, result) => {
-            if (err) {
-                res.status(500)
-            } else {
-                doctorModel.updateOne({ _id: result.doctorId }, { $set: details }).then((update) => {
-                    update.acknowledged ? response.status = true : response.status = false
-                    res.status(200).json(response)
-                })
-            }
+        doctorModel.updateOne({ _id: req.doctorLogged }, { $set: details }).then((update) => {
+            update.acknowledged ? response.status = true : response.status = false
+            res.status(200).json(response)
         })
     }
     catch (err) {
@@ -255,22 +242,15 @@ export const timeSlots = (req, res) => {
     try {
         let response = {}
         let slots = req.body.timeData
-        let token = req.headers.authorization
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, result) => {
-            if (err) {
-                res.status(500)
-            } else {
-                checkSlots(slots, result.doctorId).then((check) => {
-                    if (!check) {
-                        doctorModel.updateOne({ _id: result.doctorId }, { $push: { timings: slots } }).then((update) => {
-                            update.acknowledged ? response.status = true : response.status = false
-                            res.status(200).json(response)
-                        })
-                    } else {
-                        response.status = false
-                        res.status(200).json(response)
-                    }
+        checkSlots(slots, req.doctorLogged).then((check) => {
+            if (!check) {
+                doctorModel.updateOne({ _id: req.doctorLogged }, { $push: { timings: slots } }).then((update) => {
+                    update.acknowledged ? response.status = true : response.status = false
+                    res.status(200).json(response)
                 })
+            } else {
+                response.status = false
+                res.status(200).json(response)
             }
         })
 
@@ -283,19 +263,12 @@ export const timeSlots = (req, res) => {
 
 export const deleteSlot = (req, res) => {
     try {
-        const token = req.headers.authorization
         const data = req.body.data
         let response = {}
 
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, doctor) => {
-            if (err) {
-                res.status(500)
-            } else {
-                doctorModel.updateOne({ _id: doctor.doctorId }, { $pull: { timings: data } }).then((result) => {
-                    result.acknowledged ? response.status = true : response.status = false
-                    res.status(200).json(response)
-                })
-            }
+        doctorModel.updateOne({ _id: req.doctorLogged }, { $pull: { timings: data } }).then((result) => {
+            result.acknowledged ? response.status = true : response.status = false
+            res.status(200).json(response)
         })
 
     }
@@ -308,23 +281,16 @@ export const deleteSlot = (req, res) => {
 
 export const editProfilePic = (req, res) => {
     try {
-        const token = req.headers.authorization
         const image = req.body.imageData
-        jwt.verify(token, process.env.TOKEN_SECRET, (err, doctor) => {
-            if (err) {
-                res.status(500)
-            } else {
-                cloudinary.uploader.upload(image,{upload_preset:'Ecare'}).then((imageData)=>{
-                    doctorModel.updateOne({_id:doctor.doctorId},{$set:{profilePic:imageData.secure_url}}).then((result)=>{
-                        result.acknowledged ? res.status(200).json({result:true}) : res.status(500)
-                    })
-                })
-            }
+        cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then((imageData) => {
+            doctorModel.updateOne({ _id: req.doctorLogged }, { $set: { profilePic: imageData.secure_url } }).then((result) => {
+                result.acknowledged ? res.status(200).json({ result: true }) : res.status(500)
+            })
         })
-        
+
     } catch (err) {
         res.status(500)
     }
-   
+
 }
 

@@ -356,7 +356,7 @@ const DoctorProfile = () => {
                                 </label>
                                 <input onChange={(e) => setPriceOffline(e.target.value)} className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50" type="number" id="address" name="address" placeholder={docDetails?.priceOffline} />
                             </div>
-                            <button className="save-button text-white py-2 px-4 rounded-full  focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50">
+                            <button className="save-button text-white py-2 px-4 rounded-full bg-mainColor hover:bg-secColor  focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                                 Save Changes
                             </button>
                         </form>

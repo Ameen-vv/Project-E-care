@@ -1,0 +1,15 @@
+.save-button{
+    background-color:#0AB3B8;
+}
+.save-button:hover{
+    background-color: #66A1FD;
+}
+.active-link{
+    background-color: #66A1FD;
+    color: #fff;
+    border-radius: 10px;
+}
+.active-link:hover{
+    background-color: #fff;    
+    color: darkblue;
+}

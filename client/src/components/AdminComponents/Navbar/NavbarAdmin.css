@@ -1,0 +1,37 @@
+.admin-nav{
+    height: 70px;
+    border-bottom: 0.5px solid rgb(231, 228, 228);
+    align-items: center;
+    font-size: 14px;
+    color: #555;
+}
+.wrapper{
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+.adminNav-items{
+    display: flex;
+    align-items: center;
+}
+ .adminNav-item{
+    display: flex;
+    align-items: center;
+}
+ .admin-search{
+    height: 5vh;
+    display: flex;
+    align-items: center;
+    border: 0.5px solid lightgray;
+    padding: 3px; 
+}
+.admin-search input{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    
+}
+.admin-search input::placeholder{
+    font-size: 12px;
+}

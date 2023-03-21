@@ -1,0 +1,30 @@
+
+.department-name{
+    font-size: 1.1rem;
+    color: #00468b;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.department-heading{
+    font-size: 1.5rem;
+    color: #00468b;
+    font-weight: 700;
+    text-transform: uppercase;   
+}
+.common-head{
+    font-size: 14px;
+}
+.common-list{
+    font-size: 12px;
+}
+@media only screen and (max-width:700px){
+    .card-class{
+        justify-content: center;
+    }
+}
+.department-subheading{
+    font-size: 1.2rem;
+    color: #00468b;
+    font-weight: 700;
+    text-transform: uppercase;      
+}

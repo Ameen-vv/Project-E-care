@@ -1,0 +1,14 @@
+
+@media only screen and (max-width: 450px) {
+    .drProfilView{
+        flex-direction: column;
+    }
+    .drProfileButtonDiv{
+        flex-direction: column;
+        justify-content: center;
+        
+    }
+    .drProfileButtons{
+        width: 90%;
+    }   
+  }

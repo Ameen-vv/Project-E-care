@@ -1,0 +1,14 @@
+.sign-up{
+    background-color: #0AB3B8;
+    color: white;
+}
+.sign-up:hover{
+    background-color:#66A1FD ;
+}
+.worker:hover{
+    background-color:#66A1FD ;
+    color: #fff;
+}
+.hide-acount-type{
+    display:none;
+}

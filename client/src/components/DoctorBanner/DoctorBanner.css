@@ -1,0 +1,8 @@
+.doctor-banner-button{
+    background-color: #0AB3B8;
+    color: white;
+}
+.doctor-banner-button:hover{
+    background-color: #66A1FD;
+    color: white;
+}

@@ -15,6 +15,8 @@ import cloudinary from '../utils/cloudinary.js'
 
 
 import Razorpay from "razorpay";
+import walletModel from "../model/walletSchema.js";
+import walletTransactionModel from "../model/walletTransactionsSchem.js";
 export let otpVerify
 
 
@@ -56,9 +58,14 @@ export const verifyOtpAndSignUp = (req, res) => {
             bcrypt.hash(user.password, 10).then((hash) => {
                 user.password = hash
                 const newUser = new userModel(user)
-                newUser.save().then(() => {
-                    response.status = true
-                    res.status(200).json(response)
+                newUser.save().then((newUser) => {
+                    let wallet = new walletModel({
+                        userId:newUser._id
+                    })
+                    wallet.save().then(()=>{
+                        response.status = true
+                        res.status(200).json(response)
+                    })
                 })
             })
         } else {
@@ -202,6 +209,7 @@ export const resetPass = (req, res) => {
     }
 }
 
+
 export const saveGoogleUser = (req, res) => {
     try {
         let response = {}
@@ -298,8 +306,7 @@ export const bookAppoinment = (req, res) => {
         newDate.setMinutes(newDate.getMinutes() + 30); // add 30 minutes
         checkingSlotsAvailability({ newDate, doctorId, time }).then(({ available, amount }) => {
             if (available) {
-                const token = req.headers.authorization
-                appointmentModel.findOne({ patientId: req.userLogged, doctorId: doctorId, date: newDate, slot: time }).then((appointment) => {
+                appointmentModel.findOne({ patientId: req.userLogged, doctorId: doctorId, date: newDate, slot: time, paymentStatus:true }).then((appointment) => {
                     if (appointment) {
                         res.status(200).json({ available: 'exist' })
                     } else {
@@ -307,7 +314,8 @@ export const bookAppoinment = (req, res) => {
                             doctorId: doctorId,
                             patientId: req.userLogged,
                             date: newDate,
-                            slot: time
+                            slot: time,
+                            price:amount
                         })
                         newAppointment.save().then((appointment) => {
                             let newOrder = new orderModel({
@@ -317,7 +325,7 @@ export const bookAppoinment = (req, res) => {
                                 amount: amount
                             })
                             newOrder.save().then((order) => {
-                                res.status(200).json({ available: 'available', orderId: order._id })
+                                res.status(200).json({ available: 'available', orderId: order._id,appointmentId:appointment._id , price:amount})
                             })
                         })
                     }
@@ -374,7 +382,9 @@ export const verifyPayment = (req, res) => {
                     })
                 })
         } else {
-            res.status(200)
+            appointmentModel.findOneAndRemove({ _id: result.appointmentId }).then(() => {
+                res.status(200).json({ signatureIsValid: false })
+            })
         }
     } catch (err) {
         res.status(500)
@@ -420,4 +430,29 @@ export const editProfilePic = (req, res) => {
         res.status(500)
     }
 }
+
+
+export const getAppointmentsUser = (req, res) => {
+    try {
+        appointmentModel.find({ patientId: req.userLogged,status:'booked' }).populate('doctorId','_id fullName priceOffline')
+        .then((appointments) => {
+            res.status(200).json(appointments)
+        })
+    }
+    catch (err) {
+        res.status(500)
+    }
+}
+
+export const getAppointmentHistory = (req,res)=>{
+    try{
+        appointmentModel.find({patientId:req.userLogged,status:{$ne:'booked'}}).populate('doctorId','_id fullName priceOffline').sort({createdAt:1}).then((history)=>{
+            res.status(200).json(history)
+        })
+    }   
+    catch(err){
+        res.status(500)
+    }
+}
+
 

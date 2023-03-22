@@ -9,27 +9,41 @@ import { userUrl } from "../../../apiLinks/apiLinks";
 const Profile = () => {
     const [activeTab, setActiveTab] = useState("profile")
     const editFormRef = useRef('')
-    const [userData,setUserData] = useState({})
+    const [userData, setUserData] = useState({})
     const [email, setEmail] = useState(null)
     const [phone, setPhone] = useState(null)
     const [address, setAddress] = useState(null)
     const [resetPage, setResetPage] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [appointments, setAppointments] = useState([])
+    const [history, setHistory] = useState([])
     const Navigate = useNavigate()
     const token = localStorage.getItem('userToken')
-    const headers = {Authorization:token}
+    const headers = { Authorization: token }
 
-    useEffect(()=>{
+    useEffect(() => {
         setLoading(true)
-        axios.get(`${userUrl}getUserDetails`,{headers}).then((response)=>{
+        axios.get(`${userUrl}getUserDetails`, { headers }).then((response) => {
             setUserData(response.data)
-        }).catch(()=>{
+        }).catch(() => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
-        }).finally(()=>setLoading(false))
-        if(activeTab === 'appointments'){
-            axios.get(`${userUrl}getAppointments`)
+        }).finally(() => setLoading(false))
+
+    }, [resetPage])
+
+    useEffect(() => {
+        if (activeTab === 'appointments') {
+            axios.get(`${userUrl}getAppointments`, { headers }).then((response) => {
+                setAppointments(response.data)
+            })
         }
-    },[resetPage])
+        else if (activeTab === 'history') {
+            axios.get(`${userUrl}getAppointmentHistory`, { headers }).then((response) => {
+                setHistory(response.data)
+            })
+        }
+    }, [activeTab, resetPage])
+
 
 
     const handleTabClick = (tabName) => {
@@ -37,18 +51,18 @@ const Profile = () => {
     };
 
 
-    const editProfile = (e)=>{
+    const editProfile = (e) => {
         e.preventDefault()
         setLoading(true)
         let updatedData = {}
         email && (updatedData.email = email)
         phone && (updatedData.phone = phone)
         address && (updatedData.address = address)
-        axios.post(`${userUrl}editProfile`,updatedData,{headers}).then((response)=>{
-            response.status === 200 && setResetPage(resetPage=>!resetPage)
-        }).catch((err)=>{
+        axios.post(`${userUrl}editProfile`, updatedData, { headers }).then((response) => {
+            response.status === 200 && setResetPage(resetPage => !resetPage)
+        }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
-        }).finally(()=>setLoading(false))
+        }).finally(() => setLoading(false))
     }
 
     const editProfilePic = (e) => {
@@ -66,25 +80,6 @@ const Profile = () => {
             })
         }
     }
-
-
-
-
-
-    const notifications = [{
-        id: 1,
-        message: 'this is a notification'
-    }, {
-        id: 2,
-        message: 'this is a notification'
-    }, {
-        id: 3,
-        message: 'this is a notification'
-    }]
-    const appointments = [{
-        id: 1,
-        message: 'Theres is an appointment on 12-12-2-23 with patient'
-    }]
 
 
     const renderTabContent = () => {
@@ -141,21 +136,31 @@ const Profile = () => {
                         </div>
                     </div>
                 );
-            case "notifications":
+            case "history":
 
                 return (
-                    notifications.length === 0 ? <div className="flex flex-col items-center">
+                    history.length === 0 ? <div className="flex flex-col items-center">
                         <BellIcon className="h-24 w-24 text-gray-300 mb-4 mt-4" />
                         <p className="text-lg leading-7 text-gray-500">You have no notifications.</p>
                     </div> :
                         <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
-                            <h2 className="text-xl font-bold mb-4">Notifications</h2>
-                            {notifications.map(notification => (
-                                <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={notification.id}>
+                            <h2 className="text-xl font-bold mb-4">Appointment History</h2>
+                            {history.map(history => (
+                                <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={history._id}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-3">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                                    </svg><p className="text-gray-600 flex-grow">{notification.message}</p>
-                                    <button className="text-gray-600 font-bold py-2 px-4 rounded border border-gray-400">Mark as Read</button>
+                                    </svg><p className="text-gray-600 flex-grow  tracking-wide	text-textBlue text-sm">Doctor:<a className="text-textBlue font-semibold me-3"> Dr {history?.doctorId?.fullName}
+                                    </a>  Date: <a className="text-textBlue font-semibold me-3">{history?.date.substring(0, 10)}</a>  Time:  <a className="text-textBlue font-semibold me-3"> {history?.slot}</a> booked on: <a className="text-textBlue font-semibold me-3">{history?.createdAt.substring(0, 10)}</a>
+                                    status:{
+                                        history?.status === 'visited' && <a className="text-textBlue font-semibold">Consulted</a>
+                                    }
+                                    {
+                                        history?.status === 'unVisited' && <a className="text-textBlue font-semibold">not consulted</a>
+                                    }
+                                    {
+                                        history?.status === 'cancelled' && <a className="text-textBlue font-semibold">Cancelled</a>
+                                    } 
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -168,12 +173,14 @@ const Profile = () => {
                     </div> : <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
                         <h2 className="text-xl font-bold mb-4">Your appointments</h2>
                         {appointments.map(appointment => (
-                            <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={appointment.id}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={appointment._id}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-8 h-8 mr-3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <p className="text-gray-600 flex-grow">{appointment.message}</p>
-                                <button className="text-gray-600 font-bold py-2 px-4 rounded border border-gray-400">Cancel</button>
+
+                                <p className="text-gray-600 flex-grow tracking-wide	text-textBlue text-sm">You  have  booked  an  appointment  with <a className="text-textBlue font-semibold"> Dr {appointment?.doctorId?.fullName}</a>  on  
+                                <a className="text-textBlue font-semibold">{appointment?.date.substring(0, 10)}</a>  between  <a className="text-textBlue font-semibold">{appointment?.slot}</a></p>
+
                             </div>
                         ))}
                     </div>
@@ -188,7 +195,7 @@ const Profile = () => {
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="email">
                                     Email
                                 </label>
-                                <input onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50" type="email" id="email" name="email" placeholder={userData?.email}  />
+                                <input onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50" type="email" id="email" name="email" placeholder={userData?.email} />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="phone">
@@ -241,10 +248,10 @@ const Profile = () => {
                             </button>
                             <button
                                 className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "notifications" ? "active-nav" : "text-gray-600"}`}
-                                onClick={() => handleTabClick("notifications")}
+                                onClick={() => handleTabClick("history")}
                             >
                                 <BellIcon className="h-6 w-6 mr-2" />
-                                <span>Notifications</span>
+                                <span>History</span>
                             </button>
                             <button
                                 className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "appointments" ? "active-nav" : "text-gray-600"}`}

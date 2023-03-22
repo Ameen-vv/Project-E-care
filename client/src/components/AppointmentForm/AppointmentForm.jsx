@@ -19,6 +19,8 @@ const AppointmentForm = () => {
     const [isOpen, setOpen] = useState(false)
     const [orderId, setOrderId] = useState('')
     const [loading,setLoading] = useState(false)
+    const [price,setPrice] = useState('')
+    const [appointmentId,setAppointmentId] = useState('')
     const Navigate = useNavigate()
     const formRef = useRef(null)
     const token = localStorage.getItem('userToken')
@@ -76,8 +78,11 @@ const AppointmentForm = () => {
         };
         axios.post(`${userUrl}bookAppoinment`, { appointment }, { headers }).then((response) => {
             if (response.data.available === 'available') {
+                setPrice(response.data.price)
                 setOpen(true)
                 setOrderId(response.data.orderId)
+                setAppointmentId(response.data.appointmentId)
+                
             }
             response.data.available === 'notAvailable' &&  toast.error('Booking For this slot is full please try to change date')
             response.data.available === 'exist' && toast.error('You have already booked for this date in same slot')
@@ -92,7 +97,13 @@ const AppointmentForm = () => {
 
 
     const cancelPayment = () => {
-        setOpen(false)
+        axios.get(`${userUrl}cancelAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+            setOpen(false)
+            formRef.current.reset()
+        }).catch((err)=>{
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
+        })
+        
     }
 
     const handleDate = (newDate) => {
@@ -120,7 +131,8 @@ const AppointmentForm = () => {
             handler: function (response) {
                 setLoading(true)
                 axios.post(`${userUrl}verifyPayment?orderId=${orderId}`, response, { headers }).then((response) => {
-                    response.data.signatureIsValid ? toast.success('payment success') : axios.error('error')
+                    response.data.signatureIsValid ? toast.success('Payment success') : toast.error('Payment failed')
+                    setOpen(false)
                 }).catch((err) => {
                     err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
                 }).finally(()=>setLoading(false))
@@ -194,7 +206,7 @@ const AppointmentForm = () => {
                     <div className="bg-white p-8 rounded-lg">
                         <h2 className="text-2xl font-bold mb-6">Payment Details</h2>
                         <p className="text-lg mb-6">
-                            Total Amount: <span className="font-bold">$700</span>
+                            Total Amount: <span className="font-bold">₹ {price}</span>
                         </p>
                         <div className="flex justify-between">
                             <button

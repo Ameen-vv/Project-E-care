@@ -1,6 +1,6 @@
 import express from 'express'
 import {  SignIn,doctorSignUp,doctorAuth, sendOtp, resendOtp, rejectedUser, resendApplication, 
-          getDepartment, getDocDetails, editProfile, timeSlots, deleteSlot, editProfilePic } from '../controllers/doctorController.js'
+          getDepartment, getDocDetails, editProfile, timeSlots, deleteSlot, editProfilePic, getAppointmentsDoctor, appointmentUnVisited, appointmentVisited, cancelAppointment } from '../controllers/doctorController.js'
 import { doctorAuthentication } from '../middlewares/Authentications.js'
 const router = express.Router()
 
@@ -18,5 +18,10 @@ router.post('/editProfile',doctorAuthentication,editProfile)
 router.post('/editTime',doctorAuthentication,timeSlots)
 router.post('/deleteSlot',doctorAuthentication,deleteSlot)
 router.post('/editProfilePic',doctorAuthentication,editProfilePic)
+router.get('/getAppointments',doctorAuthentication,getAppointmentsDoctor)
+router.get('/visitedAppointment',doctorAuthentication,appointmentVisited)
+router.get('/UnVisitedAppointment',doctorAuthentication,appointmentUnVisited)
+router.get('/cancelAppointment',doctorAuthentication,cancelAppointment)
+
 
 export default router

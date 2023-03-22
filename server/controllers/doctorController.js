@@ -8,6 +8,9 @@ import cloudinary from '../utils/cloudinary.js'
 import departmentModel from '../model/departmentModel.js'
 let verifyOtp
 import { checkSlots } from './helpers/helpers.js'
+import appointmentModel from '../model/appointmentSchema.js'
+import walletModel from '../model/walletSchema.js'
+import walletTransactionModel from '../model/walletTransactionsSchem.js'
 
 
 export const sendOtp = (req, res) => {
@@ -211,7 +214,6 @@ export const getDepartment = (req, res) => {
 
 
 export const getDocDetails = (req, res) => {
-    let token = req.headers.authorization
     try {
         doctorModel.findOne({ _id: req.doctorLogged }).populate('department').then((doctor) => {
             res.status(200).json(doctor)
@@ -292,5 +294,64 @@ export const editProfilePic = (req, res) => {
         res.status(500)
     }
 
+}
+
+
+export const getAppointmentsDoctor = (req,res)=>{
+    try{
+        appointmentModel.find({doctorId:req.doctorLogged,status:'booked',paymentStatus:true}).populate('patientId','fullName phone email _id').then((appointments)=>{
+            res.status(200).json(appointments)
+        })
+    }   
+    catch(err){
+        res.status(500)
+    }
+}
+
+
+export const appointmentVisited = (req,res)=>{
+    try{
+        appointmentModel.updateOne({_id:req.query.appointmentId},{$set:{status:'visited'}}).then((update)=>{
+            update.acknowledged ? res.status(200).json({update:true}) : res.status(200)
+        })
+    }
+    catch(err){ 
+        res.status(500)
+    }
+}
+
+
+export const appointmentUnVisited = (req,res)=>{
+    try{
+        appointmentModel.updateOne({_id:req.query.appointmentId},{$set:{status:'unVisited'}}).then((update)=>{
+            update.acknowledged ? res.status(200).json({update:true}) : res.status(200)
+        })
+    }
+    catch(err){ 
+        res.status(500)
+    }
+}
+
+
+export const cancelAppointment = (req,res)=>{
+    try{
+        appointmentModel.findOne({_id:req.query.appointmentId}).then((appointment)=>{
+            let transaction = new walletTransactionModel({
+                amount:appointment.price,
+                transactionType:'credit'
+            })
+            transaction.save().then((transaction)=>{
+                let price = parseInt()
+                walletModel.updateOne({userId:appointment.patientId},{$inc:{balance:appointment.price},$push:{transactions:transaction._id}}).then(()=>{
+                    appointmentModel.updateOne({_id:req.query.appointmentId},{$set:{status:'cancelled'}}).then((update)=>{
+                        update.acknowledged ? res.status(200).json({cancel:true}) : res.status(200)
+                    }) 
+                })
+            })
+        })
+    }
+    catch(err){
+        res.status(500)
+    }
 }
 

@@ -27,21 +27,33 @@ const DoctorProfile = () => {
     const [endTime, setEndTime] = useState('')
     const [priceOnline, setPriceOnline] = useState('')
     const [priceOffline, setPriceOffline] = useState('')
+    const [appointments, setAppointment] = useState([])
     const [loading, setLoading] = useState(false)
     let token = localStorage.getItem('doctorToken')
+    const headers = { Authorization: token }
+
 
     const Navigate = useNavigate()
 
     useEffect(() => {
         setLoading(true)
-        token = localStorage.getItem('doctorToken')
-        const headers = { Authorization: token }
         axios.get(`${doctorUrl}getDocDetails`, { headers }).then((response) => {
             response.status === 200 && SetDocDetails(response.data)
         }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
         }).finally(() => setLoading(false))
     }, [resetPage])
+
+    useEffect(() => {
+        if (activeTab === 'appointments') {
+            setLoading(true)
+            axios.get(`${doctorUrl}getAppointments`, { headers }).then((response) => {
+                setAppointment(response.data)
+            }).catch((err) => {
+                err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
+            }).finally(() => setLoading(false))
+        }
+    }, [activeTab,resetPage])
 
 
     const handleDayOfWeekChange = (e) => {
@@ -50,36 +62,36 @@ const DoctorProfile = () => {
 
 
     const handleStartTimeChange = (e) => {
-        if(endTime){
-            const check = checkTimeValidity(e.target.value,endTime)
-            if(!check){
+        if (endTime) {
+            const check = checkTimeValidity(e.target.value, endTime)
+            if (!check) {
                 toast.error('please select proper time')
                 timeFormRef.current.reset()
                 setEndTime(null)
                 setStartTime(null)
-            }else{
+            } else {
                 setStartTime(e.target.value)
             }
-        }else{
+        } else {
             setStartTime(e.target.value)
         }
     };
 
 
     const handleEndTimeChange = (e) => {
-      if(startTime){
-        const check = checkTimeValidity(startTime,e.target.value)
-        if (!check) {
-            toast.error('please select proper time')
-            timeFormRef.current.reset()
-            setEndTime(null)
-            setStartTime(null)
+        if (startTime) {
+            const check = checkTimeValidity(startTime, e.target.value)
+            if (!check) {
+                toast.error('please select proper time')
+                timeFormRef.current.reset()
+                setEndTime(null)
+                setStartTime(null)
+            } else {
+                setEndTime(e.target.value)
+            }
         } else {
             setEndTime(e.target.value)
         }
-      }else{
-        setEndTime(e.target.value)
-      }
     };
 
 
@@ -95,8 +107,8 @@ const DoctorProfile = () => {
             priceOnline: priceOnline === '' ? docDetails?.priceOnline : priceOnline,
             priceOffline: priceOffline === '' ? docDetails?.priceOffline : priceOffline
         }
-        const headers = {Authorization:token}
-        axios.post(`${doctorUrl}editProfile`, { doctorData },{headers}).then((response) => {
+        const headers = { Authorization: token }
+        axios.post(`${doctorUrl}editProfile`, { doctorData }, { headers }).then((response) => {
             response.status === 200 && (response.data.status ? toast.success('edited successfully') : toast.error('something went wrong'))
             editFormRef.current.reset()
             response.status === 200 && setResetPage(resetPage => !resetPage)
@@ -116,8 +128,8 @@ const DoctorProfile = () => {
             endTime,
             slots
         }
-        const headers = {Authorization:token}
-        axios.post(`${doctorUrl}editTime`, { timeData },{headers}).then((response) => {
+        const headers = { Authorization: token }
+        axios.post(`${doctorUrl}editTime`, { timeData }, { headers }).then((response) => {
             response.status === 200 && (response.data.status ? toast.success('added successfully') : toast.error('the timing is already registered'))
             timeFormRef.current.reset()
             response.status === 200 && setResetPage(resetPage => !resetPage)
@@ -146,19 +158,19 @@ const DoctorProfile = () => {
     }
 
 
-    const editProfilePic = (e)=>{
+    const editProfilePic = (e) => {
         let image = e.target.files[0]
         const reader = new FileReader()
         reader.readAsDataURL(image)
-        reader.onloadend = ()=>{
+        reader.onloadend = () => {
             let imageData = reader.result
             let token = localStorage.getItem('doctorToken')
-            const headers = {Authorization:token}
-            axios.post(`${doctorUrl}editProfilePic`,{imageData},{headers}).then((response)=>{
+            const headers = { Authorization: token }
+            axios.post(`${doctorUrl}editProfilePic`, { imageData }, { headers }).then((response) => {
                 response.status === 200 && setResetPage(resetPage => !resetPage)
                 response.status === 200 && toast.success('profile pic changed')
 
-            }).catch((err)=>{
+            }).catch((err) => {
                 err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
             })
         }
@@ -169,13 +181,39 @@ const DoctorProfile = () => {
         const end = new Date(`01/01/2000 ${endTime}`);
         let check
         if (start >= end) {
-          return check = false
+            return check = false
         } else if (end <= start) {
-          return check = false
+            return check = false
         }
         return check = true;
-      }
-      
+    }
+
+
+    const appointmentVisited = (appointmentId)=>{
+        axios.get(`${doctorUrl}visitedAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+            response.data.update ? setResetPage(resetPage=>!resetPage) : toast.error('error')
+        }).catch((err)=>{
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
+        })
+    }
+
+
+    const appointmentUnVisited = (appointmentId)=>{
+        axios.get(`${doctorUrl}UnVisitedAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+            response.data.update ? setResetPage(resetPage=>!resetPage) : toast.error('error')
+        }).catch((err)=>{
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
+        })
+    }
+
+
+    const appointmentCancel = (appointmentId)=>{
+        axios.get(`${doctorUrl}cancelAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+            response.data.cancel ? setResetPage(resetPage=>!resetPage) : toast.error('error')
+        }).catch((err)=>{
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
+        })
+    }
 
 
     const notifications = [{
@@ -188,12 +226,9 @@ const DoctorProfile = () => {
         id: 3,
         message: 'this is a notification'
     }]
-    const appointments = [{
-        id: 1,
-        message: 'Theres is an appointment on 12-12-2-23 with patient'
-    }]
 
-    
+
+
     const renderTabContent = () => {
         switch (activeTab) {
             case "profile":
@@ -298,13 +333,30 @@ const DoctorProfile = () => {
                     </div> : <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
                         <h2 className="text-xl font-bold mb-4">Your appointments</h2>
                         {appointments.map(appointment => (
-                            <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={appointment.id}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                                </svg>
-                                <p className="text-gray-600 flex-grow">{appointment.message}</p>
-                                <button className="text-gray-600 font-bold py-2 px-4 rounded border border-gray-400">Cancel</button>
+                            <div className="mb-2 bg-white rounded-lg p-3 flex flex-col md:flex-row items-center justify-between" key={appointment._id}>
+                                <div className="flex-grow text-gray-600 text-sm flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                                    </svg>
+                                    <p className="text-textBlue">
+                                        <a className="font-semibold">{appointment.patientId?.fullName}</a> have booked an appointment on <a className="font-semibold">{appointment?.date.substring(0, 10)}</a> at slot <a className="font-semibold">{appointment.slot}</a>
+                                    </p>
+                                </div>
+                                <div className="flex justify-center mt-2">
+                                    <button className="bg-green-500 hover:bg-green-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={()=>appointmentVisited(appointment._id)}>
+                                        Visited
+                                    </button>
+                                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={()=>appointmentUnVisited(appointment._id)}>
+                                        Unvisited
+                                    </button>
+                                    <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded text-sm" onClick={()=>appointmentCancel(appointment._id)}>
+                                        Cancel
+                                    </button>
+                                </div>
+
+
                             </div>
+
                         ))}
                     </div>
                 );
@@ -342,7 +394,7 @@ const DoctorProfile = () => {
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="address">
                                     Experience
                                 </label>
-                                <input onChange={(e) => setExperience(e.target.value)} className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50" type="number" id="address" name="address" placeholder= {docDetails?.experience} />
+                                <input onChange={(e) => setExperience(e.target.value)} className="w-full px-3 py-2 placeholder-gray-400 border rounded-lg focus:outline-none focus:ring focus:ring-blue-500 focus:ring-opacity-50" type="number" id="address" name="address" placeholder={docDetails?.experience} />
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="address">
@@ -547,7 +599,7 @@ const DoctorProfile = () => {
                             <PencilAltIcon className="h-6 w-6 mr-2" />
                             <span>Edit Profile</span>
                         </label>
-                        <input id="fileInput" type="file" accept="image/*" className="hidden"  onChange={editProfilePic}/>
+                        <input id="fileInput" type="file" accept="image/*" className="hidden" onChange={editProfilePic} />
 
                         <h2 className="text-2xl font-semibold mb-2">{docDetails?.fullName}</h2>
                         <span className="text-gray-500 text-lg mb-4">{docDetails?.department?.name}</span>

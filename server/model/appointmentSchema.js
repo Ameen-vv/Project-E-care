@@ -28,7 +28,11 @@ const appointmentSchema = new Schema({
     createdAt:{
         type:Date,
         default:Date.now()
-    }
+    },
+    price:{
+        type:Number
+    },
+   
 })
 
 const appointmentModel = mongoose.model('appointment',appointmentSchema)

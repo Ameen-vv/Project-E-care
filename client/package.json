@@ -29,6 +29,7 @@
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.41",
     "react": "^18.2.0",
+    "react-apexcharts": "^1.4.0",
     "react-big-calendar": "^1.6.7",
     "react-bootstrap": "^2.7.1",
     "react-datepicker": "^4.10.0",
@@ -38,6 +39,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.8.1",
     "react-slick": "^0.29.0",
+    "recharts": "^2.5.0",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import appointmentModel from "../../model/appointmentSchema.js";
 import doctorModel from "../../model/doctorSchema.js";
+import userModel from "../../model/userSchema.js";
 
 export const checkSlots = (slots,id)=>{
     return new Promise((resolve,reject)=>{
@@ -61,5 +62,140 @@ export const checkingSlotsAvailability = ({ newDate, time, doctorId})=>{
                }) 
             }
         })  
+    })
+}
+
+
+export const getUserCountGraph = ()=>{
+    return new Promise((resolve,reject)=>{
+        let userCount = []
+        const year = new Date().getFullYear()
+        userModel.count({ createdAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-02-01`) } }).then(res => {
+            userCount.push(res)
+            userModel.count({ createdAt: { $gte: new Date(`${year}-02-01`), $lt: new Date(`${year}-03-01`) } }).then(res => {
+                userCount.push(res)
+                userModel.count({ createdAt: { $gte: new Date(`${year}-03-01`), $lt: new Date(`${year}-04-01`) } }).then(res => {
+                    userCount.push(res)
+                    userModel.count({ createdAt: { $gte: new Date(`${year}-04-01`), $lt: new Date(`${year}-05-01`) } }).then(res => {
+                        userCount.push(res)
+                        userModel.count({ createdAt: { $gte: new Date(`${year}-05-01`), $lt: new Date(`${year}-06-01`) } }).then(res => {
+                            userCount.push(res)
+                            userModel.count({ createdAt: { $gte: new Date(`${year}-06-01`), $lt: new Date(`${year}-07-01`) } }).then(res => {
+                                userCount.push(res)
+                                userModel.count({ createdAt: { $gte: new Date(`${year}-07-01`), $lt: new Date(`${year}-08-01`) } }).then(res => {
+                                    userCount.push(res)
+                                    userModel.count({ createdAt: { $gte: new Date(`${year}-08-01`), $lt: new Date(`${year}-09-01`) } }).then(res => {
+                                        userCount.push(res)
+                                        userModel.count({ createdAt: { $gte: new Date(`${year}-09-01`), $lt: new Date(`${year}-10-01`) } }).then(res => {
+                                            userCount.push(res)
+                                            userModel.count({ createdAt: { $gte: new Date(`${year}-10-01`), $lt: new Date(`${year}-11-01`) } }).then(res => {
+                                                userCount.push(res)
+                                                userModel.count({ createdAt: { $gte: new Date(`${year}-11-01`), $lt: new Date(`${year}-12-01`) } }).then(res => {
+                                                    userCount.push(res)
+                                                    userModel.count({ createdAt: { $gte: new Date(`${year}-12-01`), $lte: new Date(`${year}-02-31`) } }).then(res => {
+                                                        userCount.push(res)
+                                                        resolve(userCount)
+                                                    })
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+}
+
+
+export const getAppointmentCountGraph = ()=>{
+    return new Promise((resolve,reject)=>{
+        let appointmentCount = []
+        const year = new Date().getFullYear()
+        appointmentModel.count({createdAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-02-01`) }}).then(res=>{
+            appointmentCount.push(res)
+            appointmentModel.count({createdAt: { $gte: new Date(`${year}-02-01`), $lt: new Date(`${year}-03-01`) }}).then(res=>{
+                appointmentCount.push(res)
+                appointmentModel.count({createdAt: { $gte: new Date(`${year}-03-01`), $lt: new Date(`${year}-04-01`) }}).then(res=>{
+                    appointmentCount.push(res)
+                    appointmentModel.count({createdAt: { $gte: new Date(`${year}-04-01`), $lt: new Date(`${year}-05-01`) }}).then(res=>{
+                        appointmentCount.push(res)
+                        appointmentModel.count({createdAt: { $gte: new Date(`${year}-05-01`), $lt: new Date(`${year}-06-01`) }}).then(res=>{
+                            appointmentCount.push(res)
+                            appointmentModel.count({createdAt: { $gte: new Date(`${year}-06-01`), $lt: new Date(`${year}-07-01`) }}).then(res=>{
+                                appointmentCount.push(res)
+                                appointmentModel.count({createdAt: { $gte: new Date(`${year}-07-01`), $lt: new Date(`${year}-08-01`) }}).then(res=>{
+                                    appointmentCount.push(res)
+                                    appointmentModel.count({createdAt: { $gte: new Date(`${year}-08-01`), $lt: new Date(`${year}-09-01`) }}).then(res=>{
+                                        appointmentCount.push(res)
+                                        appointmentModel.count({createdAt: { $gte: new Date(`${year}-09-01`), $lt: new Date(`${year}-10-01`) }}).then(res=>{
+                                            appointmentCount.push(res)
+                                            appointmentModel.count({createdAt: { $gte: new Date(`${year}-10-01`), $lt: new Date(`${year}-11-01`) }}).then(res=>{
+                                                appointmentCount.push(res)
+                                                appointmentModel.count({createdAt: { $gte: new Date(`${year}-11-01`), $lt: new Date(`${year}-12-01`) }}).then(res=>{
+                                                    appointmentCount.push(res)
+                                                    appointmentModel.count({createdAt: { $gte: new Date(`${year}-12-01`), $lt: new Date(`${year}-12-31`) }}).then(res=>{
+                                                        appointmentCount.push(res)
+                                                        resolve(appointmentCount)
+                                                    })
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    })
+}
+
+
+export const getAppointmentCountDoctor = (id)=>{
+    return new Promise((resolve,reject)=>{
+        let appointmentCount = []
+        const year = new Date().getFullYear()
+        appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-01-01`), $lt: new Date(`${year}-02-01`) }}).then(res=>{
+            appointmentCount.push(res)
+            appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-02-01`), $lt: new Date(`${year}-03-01`) }}).then(res=>{
+                appointmentCount.push(res)
+                appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-03-01`), $lt: new Date(`${year}-04-01`) }}).then(res=>{
+                    appointmentCount.push(res)
+                    appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-04-01`), $lt: new Date(`${year}-05-01`) }}).then(res=>{
+                        appointmentCount.push(res)
+                        appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-05-01`), $lt: new Date(`${year}-06-01`) }}).then(res=>{
+                            appointmentCount.push(res)
+                            appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-06-01`), $lt: new Date(`${year}-07-01`) }}).then(res=>{
+                                appointmentCount.push(res)
+                                appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-07-01`), $lt: new Date(`${year}-08-01`) }}).then(res=>{
+                                    appointmentCount.push(res)
+                                    appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-08-01`), $lt: new Date(`${year}-09-01`) }}).then(res=>{
+                                        appointmentCount.push(res)
+                                        appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-09-01`), $lt: new Date(`${year}-10-01`) }}).then(res=>{
+                                            appointmentCount.push(res)
+                                            appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-10-01`), $lt: new Date(`${year}-11-01`) }}).then(res=>{
+                                                appointmentCount.push(res)
+                                                appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-11-01`), $lt: new Date(`${year}-12-01`) }}).then(res=>{
+                                                    appointmentCount.push(res)
+                                                    appointmentModel.count({doctorId:id,createdAt: { $gte: new Date(`${year}-12-01`), $lt: new Date(`${year}-12-31`) }}).then(res=>{
+                                                        appointmentCount.push(res)
+                                                        resolve(appointmentCount)
+                                                    })
+                                                })
+                                            })
+                                        })
+                                    })
+                                })
+                            })
+                        })
+                    })
+                })
+            })
+        })
     })
 }

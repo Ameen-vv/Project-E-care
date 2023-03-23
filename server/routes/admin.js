@@ -1,6 +1,6 @@
 import express from 'express'
-import { addDepartment,adminCheck,adminLogin, approveDoctor,blockDoctor, blockUser, editDepartment, getDepartments, getDoctor,
-         getNewDoctors, getUsers , listDepartment, rejectDoctor, unBlockDoctor, unBlockUser, unlistDepartment} from '../controllers/adminController.js'
+import { addDepartment,adminCheck,adminLogin, approveDoctor,blockDoctor, blockUser, editDepartment, getDashboardDetails, getDepartments, getDoctor,
+         getNewDoctors, getSales, getUsers , listDepartment, rejectDoctor, unBlockDoctor, unBlockUser, unlistDepartment} from '../controllers/adminController.js'
 import { adminAuthentication } from '../middlewares/Authentications.js'
 const router = express.Router()
 
@@ -22,6 +22,8 @@ router.get('/unListDepartment/:id',adminAuthentication,unlistDepartment)
 router.get('/listDepartment/:id',adminAuthentication,listDepartment)
 router.get('/authenticate',adminAuthentication,adminCheck)
 router.post('/editDepartment/:id',adminAuthentication,editDepartment)
+router.get('/getDashboardDetails',adminAuthentication,getDashboardDetails)
+router.get('/getSales',adminAuthentication,getSales)
 
 
 export default router

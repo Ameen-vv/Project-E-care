@@ -32,6 +32,12 @@ const appointmentSchema = new Schema({
     price:{
         type:Number
     },
+    paymentId:{
+        type:String
+    },
+    paymentMode:{
+        type:String
+    }
    
 })
 

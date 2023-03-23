@@ -4,8 +4,10 @@ import adminModel from "../model/adminSchema.js";
 import { generateToken } from "../jwtAuth/generateJwt.js";
 import departmentModel from "../model/departmentModel.js";
 import cloudinary from "../utils/cloudinary.js";
-import { titleCase } from './helpers/helpers.js'
+import { getAppointmentCountGraph, getUserCountGraph, titleCase } from './helpers/helpers.js'
 import jwt from "jsonwebtoken"
+import { response } from "express";
+import appointmentModel from "../model/appointmentSchema.js";
 
 
 
@@ -243,19 +245,18 @@ export const adminCheck = (req, res) => {
 
 
 export const editDepartment = async (req, res) => {
-    console.log(req.body);
+   try{
     const data = req.body.departmentDetails
     const image = req.body?.imageData
     const depId = req.params.id
-    let response = {}
     let departmentName = await titleCase(data.name)
-    departmentModel.findOne({ name: departmentName }).then(async(department) => {
+    departmentModel.findOne({ name: departmentName }).then(async (department) => {
         if (department) {
-            res.status(200).json({status:'exist'})
+            res.status(200).json({ status: 'exist' })
         } else {
             let diseases = await data.diseases.split(',')
             if (image) {
-                cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then( (imageData) => {
+                cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then((imageData) => {
                     departmentModel.updateOne({ _id: depId }, {
                         $set: {
                             name: departmentName,
@@ -264,12 +265,12 @@ export const editDepartment = async (req, res) => {
                             imageUrl: imageData.secure_url
                         }
                     }).then((result) => {
-                        result.acknowledged ? res.status(200).json({status:'success'}) : res.status(200).json({status:'error'})
+                        result.acknowledged ? res.status(200).json({ status: 'success' }) : res.status(200).json({ status: 'error' })
 
                     })
                 })
             } else {
-                
+
                 departmentModel.updateOne({ _id: depId }, {
                     $set: {
                         name: departmentName,
@@ -277,12 +278,62 @@ export const editDepartment = async (req, res) => {
                         description: data.description,
                     }
                 }).then((result) => {
-                    result.acknowledged ? res.status(200).json({status:'success'}) : res.status(200).json({status:'error'})
-                    
+                    result.acknowledged ? res.status(200).json({ status: 'success' }) : res.status(200).json({ status: 'error' })
+
 
                 })
-            }   
+            }
 
         }
     })
+   }
+   catch(err){
+    res.status(500)
+   }
+}
+
+
+export const getDashboardDetails = (req, res) => {
+    try {
+        let response = {}
+        let userGraph = [{
+            name:'Users',
+        }]
+        let appointmentGraph = [{
+            name:'Appointments',
+        }]
+        getUserCountGraph().then(userCount => {
+            userGraph[0].data = userCount
+            response.userGraph = userGraph
+            getAppointmentCountGraph().then(appointmentCount => {
+                appointmentGraph[0].data = appointmentCount
+                response.appointmentGraph = appointmentGraph
+                userModel.count().then(count=>{
+                    response.users = count
+                    doctorModel.count().then(count=>{
+                        response.doctors = count
+                        appointmentModel.count().then(count=>{
+                            response.appointments = count
+                            res.status(200).json(response)
+                        })
+                    })
+                })
+            })
+
+        })
+    } catch (err) {
+        res.status(500)
+    }
+}
+
+
+export const getSales = (req,res)=>{
+    try{
+        appointmentModel.find().populate('patientId','fullName email _id').populate('doctorId','fullName ').sort({createdAt:1}).then((appointments)=>{
+            res.status(200).json(appointments)
+        })
+    }
+    catch(err){
+        res.status(500)
+    }
 }

@@ -20,10 +20,12 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import { AiFillDashboard } from "react-icons/ai";
 import AddDepartment from '../../../components/AdminComponents/AddDepartment/AddDepartment'
 import Departments from '../../../components/AdminComponents/departmentTable/Departments'
+import DashboardAdmin from '../../../components/AdminComponents/Dashboard/DashboardAdmin'
+import { FaBuilding, FaRegChartBar, FaStethoscope, FaUsers } from 'react-icons/fa'
+import SalesReport from '../../../components/AdminComponents/SalesReport/SalesReport'
 
 const drawerWidth = 240;
 
@@ -74,6 +76,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const option = [
   {
+    page:'Dashboard',
+    path:'dashboard'
+  },
+  {
     page:'Users',
     path:'users'
   },
@@ -92,7 +98,12 @@ const option = [
   {
     page:'Add Department',
     path:'addDepartment'
+  },
+  {
+    page:'Sales',
+    path:'sales'
   }
+  
 ]
 
 export const sideBarContext = createContext('user')
@@ -100,7 +111,7 @@ export const adminLoading = createContext('')
 
 
 function AdminHome() {
-  const [path,setPath] = useState('users')
+  const [path,setPath] = useState('dashboard')
   const [adminLoad,setAdminLoad] = useState(false)
   const theme = useTheme();
   const [open, setOpen] = useState(true);
@@ -139,9 +150,9 @@ function AdminHome() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" style={{color:'black'}}>
+          {!open && <Typography variant="h6" noWrap component="div" style={{color:'black'}}>
             <img src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" width={80} height={80} />
-          </Typography>
+          </Typography>}
         </Toolbar>
       </AppBar>
       <Drawer
@@ -159,17 +170,28 @@ function AdminHome() {
         open={open}
       >
         <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
+       { open && <Typography variant="h6" noWrap component="div" style={{color:'black'}} className='mx-auto my-auto mt-4'>
+            <img src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" width={80} height={80} />
+          </Typography>}
+         
+         
         </DrawerHeader>
         <Divider />
+        <IconButton onClick={handleDrawerClose} className='ms-auto'>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
         <List>
           {option.map((page, index) => (
-            <ListItem key={page.page} disablePadding onClick={()=>setPath(page.path)}>
-              <ListItemButton>
+            <ListItem key={page.page} disablePadding onClick={()=>setPath(page.path)} className={`${page.path === path ? 'bg-gray-300 ':''} p-2`} >
+              <ListItemButton >
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                 {page.page === 'Users' && <FaUsers className='h-6 w-6'/>}
+                 {page.page === 'Dashboard' && <AiFillDashboard className='h-6 w-6'/> }
+                 {page.page === 'Doctors' && <FaStethoscope className='h-6 w-6'/>}
+                 {page.page === 'New Doctors' && <FaStethoscope className='h-6 w-6'/>}
+                 {page.page === 'Departments' && <FaBuilding className='h-6 w-6'/>}
+                 {page.page === 'Add Department' && <FaBuilding className='h-6 w-6'/>}
+                 {page.page === 'Sales' && <FaRegChartBar className='h-6 w-6'/>}
                 </ListItemIcon>
                 <ListItemText primary={page.page} />
               </ListItemButton>
@@ -193,19 +215,22 @@ function AdminHome() {
       <Main  open={open}>
       <DrawerHeader />
       <h1 className='department-subheading ml-2 mt-3 mb-3'>
+        {path === 'dashboard' && 'Dashboard'}
         {path === 'users' && 'Users'}
         {path === 'doctors' && 'Doctors'}
         {path === 'newDoctors' && 'New Doctors'}
         {path === 'addDepartment' && 'Add Department'}
         {path === 'departments' && 'Departments'}
+        {path === 'sales' && 'Sales'}
         </h1>
-      <div className='home-container'>
-        
+      <div className='home-container'>  
+        {path === 'dashboard' && <DashboardAdmin/>}
         {path === 'users' && <Table/>}
         {path === 'doctors' && <DoctorList/>}
         {path === 'newDoctors' && <NewDoctors/>}
         {path === 'addDepartment' && <AddDepartment/>}
         {path === 'departments' && <Departments/>}
+        {path === 'sales' && <SalesReport/>}
       </div>        
       </Main>
     </Box>

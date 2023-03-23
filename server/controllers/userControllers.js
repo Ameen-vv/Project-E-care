@@ -8,15 +8,13 @@ import departmentModel from "../model/departmentModel.js";
 import doctorModel from "../model/doctorSchema.js";
 import appointmentModel from "../model/appointmentSchema.js";
 import { checkingSlotsAvailability } from "./helpers/helpers.js";
-import orderModel from "../model/orderSchema.js";
 import mongoose from "mongoose";
 import crypto from 'crypto'
 import cloudinary from '../utils/cloudinary.js'
-
-
 import Razorpay from "razorpay";
 import walletModel from "../model/walletSchema.js";
 import walletTransactionModel from "../model/walletTransactionsSchem.js";
+import { response } from "express";
 export let otpVerify
 
 
@@ -60,9 +58,9 @@ export const verifyOtpAndSignUp = (req, res) => {
                 const newUser = new userModel(user)
                 newUser.save().then((newUser) => {
                     let wallet = new walletModel({
-                        userId:newUser._id
+                        userId: newUser._id
                     })
-                    wallet.save().then(()=>{
+                    wallet.save().then(() => {
                         response.status = true
                         res.status(200).json(response)
                     })
@@ -306,7 +304,7 @@ export const bookAppoinment = (req, res) => {
         newDate.setMinutes(newDate.getMinutes() + 30); // add 30 minutes
         checkingSlotsAvailability({ newDate, doctorId, time }).then(({ available, amount }) => {
             if (available) {
-                appointmentModel.findOne({ patientId: req.userLogged, doctorId: doctorId, date: newDate, slot: time, paymentStatus:true }).then((appointment) => {
+                appointmentModel.findOne({ patientId: req.userLogged, doctorId: doctorId, date: newDate, slot: time, paymentStatus: true, status: 'booked' }).then((appointment) => {
                     if (appointment) {
                         res.status(200).json({ available: 'exist' })
                     } else {
@@ -315,18 +313,12 @@ export const bookAppoinment = (req, res) => {
                             patientId: req.userLogged,
                             date: newDate,
                             slot: time,
-                            price:amount
+                            price: amount
                         })
                         newAppointment.save().then((appointment) => {
-                            let newOrder = new orderModel({
-                                userId: req.userLogged,
-                                doctorId: doctorId,
-                                appointmentId: appointment._id,
-                                amount: amount
-                            })
-                            newOrder.save().then((order) => {
-                                res.status(200).json({ available: 'available', orderId: order._id,appointmentId:appointment._id , price:amount})
-                            })
+
+                            res.status(200).json({ available: 'available', appointmentId: appointment._id, price: amount })
+
                         })
                     }
                 })
@@ -347,11 +339,11 @@ export const bookAppoinment = (req, res) => {
 export const initializePayment = (req, res) => {
     try {
         const orderId = req.query.orderId
-        orderModel.findOne({ _id: orderId }).then((order) => {
+        appointmentModel.findOne({ _id: orderId }).then((order) => {
             if (order) {
                 const instance = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_SECRET })
                 var options = {
-                    amount: order.amount * 100,
+                    amount: order.price * 100,
                     currency: 'INR'
                 }
                 instance.orders.create(options, function (err, order) {
@@ -375,14 +367,12 @@ export const verifyPayment = (req, res) => {
             .update(body.toString())
             .digest('hex');
         if (expectedSignature === req.body.razorpay_signature) {
-            orderModel.findOneAndUpdate({ _id: req.query.orderId }, { $set: { status: 'success', paymentId: req.body.razorpay_payment_id } })
-                .then((result) => {
-                    appointmentModel.updateOne({ _id: result.appointmentId }, { $set: { paymentStatus: true } }).then(() => {
-                        res.status(200).json({ signatureIsValid: true })
-                    })
-                })
+            appointmentModel.updateOne({ _id: req.query.orderId }, { $set: { paymentStatus: true, paymentId: req.body.razorpay_payment_id,paymentMode:'online' } })
+            .then(() => {
+                res.status(200).json({ signatureIsValid: true })
+            })
         } else {
-            appointmentModel.findOneAndRemove({ _id: result.appointmentId }).then(() => {
+            appointmentModel.findOneAndRemove({ _id: req.query.orderId }).then(() => {
                 res.status(200).json({ signatureIsValid: false })
             })
         }
@@ -434,25 +424,35 @@ export const editProfilePic = (req, res) => {
 
 export const getAppointmentsUser = (req, res) => {
     try {
-        appointmentModel.find({ patientId: req.userLogged,status:'booked' }).populate('doctorId','_id fullName priceOffline')
-        .then((appointments) => {
-            res.status(200).json(appointments)
-        })
+        appointmentModel.find({ patientId: req.userLogged, status: 'booked' }).populate('doctorId', '_id fullName priceOffline')
+            .then((appointments) => {
+                res.status(200).json(appointments)
+            })
     }
     catch (err) {
         res.status(500)
     }
 }
 
-export const getAppointmentHistory = (req,res)=>{
-    try{
-        appointmentModel.find({patientId:req.userLogged,status:{$ne:'booked'}}).populate('doctorId','_id fullName priceOffline').sort({createdAt:1}).then((history)=>{
-            res.status(200).json(history)
-        })
-    }   
-    catch(err){
+export const getAppointmentHistory = (req, res) => {
+    try {
+        appointmentModel.find({ patientId: req.userLogged, status: { $ne: 'booked' } }).populate('doctorId', '_id fullName priceOffline')
+            .sort({ createdAt: 1 }).then((history) => {
+                res.status(200).json(history)
+            })
+    }
+    catch (err) {
         res.status(500)
     }
 }
 
 
+export const getWallet = (req,res)=>{
+    try{
+        walletModel.findOne({userId:req.userLogged}).populate('transactions').then((response)=>{
+            res.status(200).json(response)
+        })
+    }catch(err){
+        res.status(500)
+    }
+}

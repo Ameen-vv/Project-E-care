@@ -7,7 +7,7 @@ import sendMail from '../nodeMailer/nodeMailer.js'
 import cloudinary from '../utils/cloudinary.js'
 import departmentModel from '../model/departmentModel.js'
 let verifyOtp
-import { checkSlots } from './helpers/helpers.js'
+import { checkSlots, getAppointmentCountDoctor } from './helpers/helpers.js'
 import appointmentModel from '../model/appointmentSchema.js'
 import walletModel from '../model/walletSchema.js'
 import walletTransactionModel from '../model/walletTransactionsSchem.js'
@@ -299,7 +299,8 @@ export const editProfilePic = (req, res) => {
 
 export const getAppointmentsDoctor = (req,res)=>{
     try{
-        appointmentModel.find({doctorId:req.doctorLogged,status:'booked',paymentStatus:true}).populate('patientId','fullName phone email _id').then((appointments)=>{
+        appointmentModel.find({doctorId:req.doctorLogged,status:'booked',paymentStatus:true}).populate('patientId','fullName phone email _id')
+        .then((appointments)=>{
             res.status(200).json(appointments)
         })
     }   
@@ -342,11 +343,44 @@ export const cancelAppointment = (req,res)=>{
             })
             transaction.save().then((transaction)=>{
                 let price = parseInt()
-                walletModel.updateOne({userId:appointment.patientId},{$inc:{balance:appointment.price},$push:{transactions:transaction._id}}).then(()=>{
+                walletModel.updateOne({userId:appointment.patientId},{$inc:{balance:appointment.price},$push:{transactions:transaction._id}})
+                .then(()=>{
                     appointmentModel.updateOne({_id:req.query.appointmentId},{$set:{status:'cancelled'}}).then((update)=>{
                         update.acknowledged ? res.status(200).json({cancel:true}) : res.status(200)
                     }) 
                 })
+            })
+        })
+    }
+    catch(err){
+        res.status(500)
+    }
+}
+
+
+export const getDoctorDashboard = (req,res)=>{
+    try{
+        let response = {}
+        let appointmentGraph = [{
+            name:'Appointments',
+        }]
+        appointmentModel.count({doctorId:req.doctorLogged,status:'visited'}).then((count)=>{
+            response.patientCount = count
+            appointmentModel.find({doctorId:req.doctorLogged,paymentStatus:true}).then((appointments)=>{
+                let sum = 0
+                for(let i = 0;i<appointments.length;i++){
+                    sum = sum + appointments[i].price
+                }
+                response.totalRevenue = sum
+                appointmentModel.count({doctorId:req.doctorLogged,status:'booked'}).then((count)=>{
+                    response.upcomingAppointments = count
+                    getAppointmentCountDoctor(req.doctorLogged).then((count)=>{
+                        appointmentGraph[0].data = count
+                        response.appointmentGraph = appointmentGraph
+                        res.status(200).json(response)
+                    })
+            })
+               
             })
         })
     }

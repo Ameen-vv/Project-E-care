@@ -38,7 +38,18 @@ function DoctorList() {
     }
     
     const columns = [
-        { field: '_id', headerName: 'ID', width: 200 },
+        {
+            field: 'index',
+            headerName: '#',
+            width: 100,
+            renderCell: (params) => {
+                const rowId = params.row._id;
+                const rowIndex = doctorData.findIndex((row) => row._id === rowId);
+                return (
+                    <div>{rowIndex + 1}</div>
+                );
+            },
+        },
         { field: 'fullName', headerName: 'Full name', width: 200 },
         { field: 'email', headerName: 'email', width: 200 },
         ,

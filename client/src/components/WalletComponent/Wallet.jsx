@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { userUrl } from '../../../apiLinks/apiLinks';
 
 const Wallet = () => {
   const [balance, setBalance] = useState(0);
   const [transactionHistory, setTransactionHistory] = useState([]);
 
-  const handleAddMoney = (amount) => {
-    const newBalance = balance + amount;
-    setBalance(newBalance);
-    setTransactionHistory([
-      ...transactionHistory,
-      {
-        type: 'credit',
-        amount,
-        date: new Date().toLocaleString(),
-      },
-    ]);
-  };
+  useEffect(()=>{
+    const token = localStorage.getItem('userToken')
+    const headers = {authorization:token}
+    axios.get(`${userUrl}getWallet`,{headers}).then((response)=>{
+      setBalance(response.data.balance)
+      setTransactionHistory(response.data.transactions)
+    })
+  },[])
+  
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 md:p-10 lg:p-12">
@@ -23,14 +22,14 @@ const Wallet = () => {
       <div className="flex flex-col sm:flex-row items-center sm:justify-between mb-6 sm:mb-8 md:mb-10 lg:mb-12">
         <div className="mb-2 sm:mb-0">
           <p className="text-gray-600 font-semibold">Balance:</p>
-          <p className="text-2xl font-bold">₹{balance}</p>
+          <p className="text-2xl font-bold">₹700</p>
         </div>
-        <button
+        {/* <button
           onClick={() => handleAddMoney(50)}
           className="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-full shadow-sm transition-colors duration-300"
         >
           Add ₹50
-        </button>
+        </button> */}
       </div>
       <div className="overflow-x-auto">
         <table className="table-auto w-full text-left">
@@ -48,10 +47,10 @@ const Wallet = () => {
                 <td className="px-4 py-2">
                   <span
                     className={`font-semibold text-sm ${
-                      transaction.type === 'credit' ? 'text-green-500' : 'text-red-500'
+                      transaction.transactionType === 'credit' ? 'text-green-500' : 'text-red-500'
                     }`}
                   >
-                    {transaction.type === 'credit' ? 'Credit' : 'Debit'}
+                    {transaction.transactionType === 'credit' ? 'Credit' : 'Debit'}
                   </span>
                 </td>
                 <td className="px-4 py-2">₹{transaction.amount}</td>

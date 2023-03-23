@@ -80,7 +80,6 @@ const AppointmentForm = () => {
             if (response.data.available === 'available') {
                 setPrice(response.data.price)
                 setOpen(true)
-                setOrderId(response.data.orderId)
                 setAppointmentId(response.data.appointmentId)
                 
             }
@@ -113,7 +112,7 @@ const AppointmentForm = () => {
 
     const initializePayment = () => {
         setLoading(true)
-        axios.get(`${userUrl}initializePayment?orderId=${orderId}`, { headers }).then((response) => {
+        axios.get(`${userUrl}initializePayment?orderId=${appointmentId}`, { headers }).then((response) => {
             response.data.order ? handleRazorPay(response.data.order) : toast.error('Something Wrong')
         }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
@@ -130,7 +129,7 @@ const AppointmentForm = () => {
             "order_id": order.id,
             handler: function (response) {
                 setLoading(true)
-                axios.post(`${userUrl}verifyPayment?orderId=${orderId}`, response, { headers }).then((response) => {
+                axios.post(`${userUrl}verifyPayment?orderId=${appointmentId}`, response, { headers }).then((response) => {
                     response.data.signatureIsValid ? toast.success('Payment success') : toast.error('Payment failed')
                     setOpen(false)
                 }).catch((err) => {

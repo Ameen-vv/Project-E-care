@@ -8,10 +8,15 @@ import axios from "axios";
 import { doctorUrl, userUrl } from "../../../apiLinks/apiLinks";
 import { toast, Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Box, Card, Container, Grid, Typography, useTheme, } from "@mui/material";
+import { FaUserAlt, FaStethoscope, FaBook } from "react-icons/fa";
+import ReactApexChart from "react-apexcharts";
+
+
 
 const DoctorProfile = () => {
     const { docDetails, SetDocDetails } = useContext(docDetailsContext)
-    const [activeTab, setActiveTab] = useState("profile")
+    const [activeTab, setActiveTab] = useState("dashboard")
     const endTimeRef = useRef('')
     const timeFormRef = useRef('')
     const editFormRef = useRef('')
@@ -29,6 +34,10 @@ const DoctorProfile = () => {
     const [priceOffline, setPriceOffline] = useState('')
     const [appointments, setAppointment] = useState([])
     const [loading, setLoading] = useState(false)
+    const [patientCount, setPatientCount] = useState('')
+    const [revenue, setRevenue] = useState('')
+    const [pending, setPending] = useState('')
+    const [appointmentGraph,setAppointmentGraph] = useState([])
     let token = localStorage.getItem('doctorToken')
     const headers = { Authorization: token }
 
@@ -52,13 +61,52 @@ const DoctorProfile = () => {
             }).catch((err) => {
                 err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
             }).finally(() => setLoading(false))
+        } else if (activeTab === 'dashboard') {
+            setLoading(true)
+            axios.get(`${doctorUrl}getDashboardDetails`, { headers }).then((response) => {
+                setPatientCount(response.data.patientCount)
+                setRevenue(response.data.totalRevenue)
+                setPending(response.data.upcomingAppointments)
+                setAppointmentGraph(response.data.appointmentGraph)
+            }).catch((err) => {
+                err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
+            }).finally(() => setLoading(false))
         }
-    }, [activeTab,resetPage])
+    }, [activeTab, resetPage])
 
 
     const handleDayOfWeekChange = (e) => {
         setDay(e.target.value);
     };
+
+    const optionsSales = {
+        chart: {
+            height: 350,
+            type: 'line',
+            zoom: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'straight'
+        },
+        title: {
+            text: 'Sales by Month',
+            align: 'left'
+        },
+        grid: {
+            row: {
+                colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                opacity: 0.5
+            },
+        },
+        xaxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        }
+    }
 
 
     const handleStartTimeChange = (e) => {
@@ -189,28 +237,28 @@ const DoctorProfile = () => {
     }
 
 
-    const appointmentVisited = (appointmentId)=>{
-        axios.get(`${doctorUrl}visitedAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
-            response.data.update ? setResetPage(resetPage=>!resetPage) : toast.error('error')
-        }).catch((err)=>{
+    const appointmentVisited = (appointmentId) => {
+        axios.get(`${doctorUrl}visitedAppointment?appointmentId=${appointmentId}`, { headers }).then((response) => {
+            response.data.update ? setResetPage(resetPage => !resetPage) : toast.error('error')
+        }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
         })
     }
 
 
-    const appointmentUnVisited = (appointmentId)=>{
-        axios.get(`${doctorUrl}UnVisitedAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
-            response.data.update ? setResetPage(resetPage=>!resetPage) : toast.error('error')
-        }).catch((err)=>{
+    const appointmentUnVisited = (appointmentId) => {
+        axios.get(`${doctorUrl}UnVisitedAppointment?appointmentId=${appointmentId}`, { headers }).then((response) => {
+            response.data.update ? setResetPage(resetPage => !resetPage) : toast.error('error')
+        }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
         })
     }
 
 
-    const appointmentCancel = (appointmentId)=>{
-        axios.get(`${doctorUrl}cancelAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
-            response.data.cancel ? setResetPage(resetPage=>!resetPage) : toast.error('error')
-        }).catch((err)=>{
+    const appointmentCancel = (appointmentId) => {
+        axios.get(`${doctorUrl}cancelAppointment?appointmentId=${appointmentId}`, { headers }).then((response) => {
+            response.data.cancel ? setResetPage(resetPage => !resetPage) : toast.error('error')
+        }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
         })
     }
@@ -343,13 +391,13 @@ const DoctorProfile = () => {
                                     </p>
                                 </div>
                                 <div className="flex justify-center mt-2">
-                                    <button className="bg-green-500 hover:bg-green-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={()=>appointmentVisited(appointment._id)}>
+                                    <button className="bg-green-500 hover:bg-green-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={() => appointmentVisited(appointment._id)}>
                                         Visited
                                     </button>
-                                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={()=>appointmentUnVisited(appointment._id)}>
+                                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded mr-2 text-sm" onClick={() => appointmentUnVisited(appointment._id)}>
                                         Unvisited
                                     </button>
-                                    <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded text-sm" onClick={()=>appointmentCancel(appointment._id)}>
+                                    <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold md:py-1 lg:py-2 px-2 lg:px-4 rounded text-sm" onClick={() => appointmentCancel(appointment._id)}>
                                         Cancel
                                     </button>
                                 </div>
@@ -579,11 +627,89 @@ const DoctorProfile = () => {
 
 
 
-                )
+                );
+            case 'dashboard':
+                return (
+                    <Container maxWidth="lg" sx={{ mt: 4 }}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: theme.palette.primary.main,
+                                        color: theme.palette.common.white,
+                                        boxShadow: theme.shadows[4],
+                                        borderRadius: theme.shape.borderRadius,
+                                        padding: theme.spacing(2),
+                                    }}
+                                >
+                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <FaUserAlt size={40} />
+                                        <Typography variant="h6" className="mx-auto" sx={{fontSize:'16px' }}>Total Patients Treated</Typography>
+                                    </Box>
+                                    <Typography variant="h3" sx={{ mt: 2, fontSize: "2.2rem" }}>
+                                        {patientCount}
+                                    </Typography>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: theme.palette.secondary.main,
+                                        color: theme.palette.common.white,
+                                        boxShadow: theme.shadows[4],
+                                        borderRadius: theme.shape.borderRadius,
+                                        padding: theme.spacing(2),
+                                    }}
+                                >
+                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <FaStethoscope size={40} />
+                                        <Typography variant="h6" className="mx-auto" sx={{fontSize:'16px' }}>Total Revenue</Typography>
+                                    </Box>
+                                    <Typography variant="h3" sx={{ mt: 2, fontSize: "2.2rem" }}>
+                                        {revenue}
+                                    </Typography>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={12} sm={6} md={3} sx={{ marginLeft: "20px" }}>
+                                <Card
+                                    sx={{
+                                        backgroundColor: theme.palette.warning.main,
+                                        color: theme.palette.common.white,
+                                        boxShadow: theme.shadows[4],
+                                        borderRadius: theme.shape.borderRadius,
+                                        padding: theme.spacing(2),
+                                    }}
+                                >
+                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                        <FaBook size={40} />
+                                        <Typography variant="h6" className="mx-auto" sx={{fontSize:'16px' }}>Upcoming Bookings</Typography> 
+                                    </Box>
+                                    <Typography variant="h3" sx={{ mt: 2, fontSize: "2.2rem" }}>
+                                        {pending}
+                                    </Typography>
+                                </Card>
+                            </Grid>
+
+                            <Grid item xs={12} md={6}>
+                                <Card
+                                    sx={{
+                                        boxShadow: theme.shadows[4],
+                                        borderRadius: theme.shape.borderRadius,
+                                        padding: theme.spacing(5),
+                                    }}
+                                >
+                                    <ReactApexChart options={optionsSales} series={appointmentGraph} type="line" height={350} />
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                );
             default:
                 return null;
         }
     };
+
+    const theme = useTheme();
 
     return (
         <>
@@ -604,6 +730,13 @@ const DoctorProfile = () => {
                         <h2 className="text-2xl font-semibold mb-2">{docDetails?.fullName}</h2>
                         <span className="text-gray-500 text-lg mb-4">{docDetails?.department?.name}</span>
                         <div className="mt-8">
+                            <button
+                                className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "dashboard" ? "active-nav" : "text-gray-600"}`}
+                                onClick={() => handleTabClick("dashboard")}>
+
+                                <PhotographIcon className="h-6 w-6 mr-2" />
+                                <span>Dashboard</span>
+                            </button>
                             <button
                                 className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "profile" ? "active-nav" : "text-gray-600"}`}
                                 onClick={() => handleTabClick("profile")}>
@@ -626,19 +759,19 @@ const DoctorProfile = () => {
                                 <span>Appointments</span>
                             </button>
                             <button
-                                className={`flex items-center text-lg py-2  px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "edit-profile" ? "active-nav" : "text-gray-600"}`}
-                                onClick={() => handleTabClick("edit-profile")}
-                            >
-                                <PencilAltIcon className="h-6 w-6 mr-2" />
-                                <span>Edit Profile</span>
-                            </button>
-                            <button
                                 className={`flex items-center text-lg py-2  px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "timings" ? "active-nav" : "text-gray-600"}`}
                                 onClick={() => handleTabClick("timings")}
                             >
                                 <PencilAltIcon className="h-6 w-6 mr-2" />
                                 <span>Timings</span>
                             </button>
+                            <button
+                                className={`flex items-center text-lg py-2  px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "edit-profile" ? "active-nav" : "text-gray-600"}`}
+                                onClick={() => handleTabClick("edit-profile")}
+                            >
+                                <PencilAltIcon className="h-6 w-6 mr-2" />
+                                <span>Edit Profile</span>
+                            </button>  
                         </div >
                     </div >
                 </div  >

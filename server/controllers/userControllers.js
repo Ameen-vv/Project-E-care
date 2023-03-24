@@ -456,3 +456,34 @@ export const getWallet = (req,res)=>{
         res.status(500)
     }
 }
+
+
+export const payWithWallet = (req,res)=>{
+    try{
+        const appointmentId = req.query.appointmentId
+        appointmentModel.findOne({_id:appointmentId}).then((appointment)=>{
+            walletModel.findOne({userId:req.userLogged}).then((wallet)=>{
+                if(wallet.balance < appointment.price){
+                    res.status(200).json({payment:'noBalance'})
+                }else{
+                    let newTransaction = new walletTransactionModel({
+                        amount:appointment.price,
+                        transactionType:'debit'
+                    })
+                    newTransaction.save().then((transaction)=>{
+                        walletModel.updateOne({userId:req.userLogged},{$push:{transactions:transaction._id},$inc:{balance:-transaction.amount}})
+                        .then(()=>{
+                            appointmentModel.updateOne({_id:appointmentId},{$set:{paymentStatus:true,paymentId:transaction._id}})
+                            .then((update)=>{
+                                update.acknowledged ? res.status(200).json({payment:'success'}) : res.status(500)
+                            })
+                        })
+                    })   
+                }
+            })
+        })
+    }
+    catch(err){
+        res.status(500)
+    }
+}

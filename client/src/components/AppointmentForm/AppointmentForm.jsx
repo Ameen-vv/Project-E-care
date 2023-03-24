@@ -142,6 +142,19 @@ const AppointmentForm = () => {
         setLoading(false)
     }
 
+    const payWithWallet = ()=>{
+        setLoading(true)
+        axios.get(`${userUrl}payWithWallet?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+                response.data.payment === 'noBalance' && toast.error('Not enough balance in wallet try another payment method ')
+                if(response.data.payment === 'success'){{
+                    toast.success('Payment success')
+                    setOpen(false)
+                }}
+        }).catch((err)=>{
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
+        }).finally(()=>setLoading(false))
+    }
+
     return (
         <div className="flex flex-col items-center justify-center h-full mt-4">
             {loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
@@ -210,6 +223,7 @@ const AppointmentForm = () => {
                         <div className="flex justify-between">
                             <button
                                 className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg mr-4"
+                                onClick={payWithWallet}
                             >
                                 Pay with Wallet
                             </button>

@@ -342,7 +342,6 @@ export const cancelAppointment = (req,res)=>{
                 transactionType:'credit'
             })
             transaction.save().then((transaction)=>{
-                let price = parseInt()
                 walletModel.updateOne({userId:appointment.patientId},{$inc:{balance:appointment.price},$push:{transactions:transaction._id}})
                 .then(()=>{
                     appointmentModel.updateOne({_id:req.query.appointmentId},{$set:{status:'cancelled'}}).then((update)=>{
@@ -389,3 +388,16 @@ export const getDoctorDashboard = (req,res)=>{
     }
 }
 
+
+export const getSalesDoctor = (req,res)=>{
+    try{
+        appointmentModel.find({doctorId:req.doctorLogged}).populate('patientId','fullName email _id').sort({createdAt:-1}).then((appointments)=>{
+            console.log(appointments);
+            res.status(200).json(appointments)
+        })
+    }
+    catch(err){
+        res.status(500)
+    }
+    
+}

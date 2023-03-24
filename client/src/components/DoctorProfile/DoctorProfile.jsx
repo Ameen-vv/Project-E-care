@@ -38,6 +38,7 @@ const DoctorProfile = () => {
     const [revenue, setRevenue] = useState('')
     const [pending, setPending] = useState('')
     const [appointmentGraph,setAppointmentGraph] = useState([])
+    const [sales,setSales] = useState([])
     let token = localStorage.getItem('doctorToken')
     const headers = { Authorization: token }
 
@@ -68,6 +69,13 @@ const DoctorProfile = () => {
                 setRevenue(response.data.totalRevenue)
                 setPending(response.data.upcomingAppointments)
                 setAppointmentGraph(response.data.appointmentGraph)
+            }).catch((err) => {
+                err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
+            }).finally(() => setLoading(false))
+        }else if(activeTab === 'sales'){
+            setLoading(true)
+            axios.get(`${doctorUrl}getSales`,{headers}).then((response)=>{
+                setSales(response.data)
             }).catch((err) => {
                 err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
             }).finally(() => setLoading(false))
@@ -264,19 +272,6 @@ const DoctorProfile = () => {
     }
 
 
-    const notifications = [{
-        id: 1,
-        message: 'this is a notification'
-    }, {
-        id: 2,
-        message: 'this is a notification'
-    }, {
-        id: 3,
-        message: 'this is a notification'
-    }]
-
-
-
     const renderTabContent = () => {
         switch (activeTab) {
             case "profile":
@@ -354,21 +349,35 @@ const DoctorProfile = () => {
                         </div>
                     </div>
                 );
-            case "notifications":
+            case "sales":
 
                 return (
-                    notifications.length === 0 ? <div className="flex flex-col items-center">
+                    sales.length === 0 ? <div className="flex flex-col items-center">
                         <BellIcon className="h-24 w-24 text-gray-300 mb-4 mt-4" />
-                        <p className="text-lg leading-7 text-gray-500">You have no notifications.</p>
+                        <p className="text-lg leading-7 text-gray-500">You have no sales.</p>
                     </div> :
                         <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
-                            <h2 className="text-xl font-bold mb-4">Notifications</h2>
-                            {notifications.map(notification => (
-                                <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={notification.id}>
+                            <h2 className="text-xl font-bold mb-4">Sales</h2>
+                            {sales.map(sale => (
+                                <div className="mb-2 bg-white rounded-lg p-3 flex items-center justify-between" key={sale._id}>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 mr-3">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                                    </svg><p className="text-gray-600 flex-grow">{notification.message}</p>
-                                    <button className="text-gray-600 font-bold py-2 px-4 rounded border border-gray-400">Mark as Read</button>
+                                    </svg><p className="text-gray-600 flex-grow  tracking-wide	text-textBlue text-sm"> Date: <a className="text-textBlue font-semibold me-3">{sale?.date.substring(0, 10)}</a>  Time:  <a className="text-textBlue font-semibold me-3"> {sale?.slot}</a> booked on: <a className="text-textBlue font-semibold me-3">{sale?.createdAt.substring(0, 10)}</a>
+                                    status:{
+                                        sale?.status === 'visited' && <a className="text-textBlue font-semibold me-3">Consulted</a>
+                                    }
+                                    {
+                                        sale?.status === 'unVisited' && <a className="text-textBlue font-semibold me-3">not consulted</a>
+                                    }
+                                    {
+                                        sale?.status === 'cancelled' && <a className="text-textBlue font-semibold me-3">Cancelled</a>
+                                    }
+                                     {
+                                        sale?.status === 'booked' && <a className="text-textBlue font-semibold me-3">upcoming</a>
+                                    } 
+                                    amount:<a className="text-textBlue font-semibold me-3">{sale?.price}</a>
+                                    </p>
+                                    
                                 </div>
                             ))}
                         </div>
@@ -745,11 +754,11 @@ const DoctorProfile = () => {
                                 <span>Profile</span>
                             </button>
                             <button
-                                className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "notifications" ? "active-nav" : "text-gray-600"}`}
-                                onClick={() => handleTabClick("notifications")}
+                                className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "sales" ? "active-nav" : "text-gray-600"}`}
+                                onClick={() => handleTabClick("sales")}
                             >
                                 <BellIcon className="h-6 w-6 mr-2" />
-                                <span>Notifications</span>
+                                <span>Sales</span>
                             </button>
                             <button
                                 className={`flex items-center text-lg py-2 px-4 rounded-md mb-2 doctor-profile-nav ${activeTab === "appointments" ? "active-nav" : "text-gray-600"}`}

@@ -10,15 +10,6 @@ function DoctorDetails() {
       setSelectedDate(event.target.value);
     }
 
-    const doctor = {
-        name:'doctor',
-        specialty:'cardiology',
-        email:'doctor@email.com',
-        phone:'8623487353',
-        education:'mbbs',
-        hospital:'govt hospital',
-        address:'addresss'
-    }
   return (
     <div className=" " style={{backgroundColor:'#F2F6FF'}}>
     <div className="max-w-7xl mx-auto py-12 sm:px-6 lg:px-8">

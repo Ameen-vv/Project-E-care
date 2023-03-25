@@ -15,9 +15,9 @@ import ReactApexChart from "react-apexcharts";
 
 
 const DoctorProfile = () => {
+    
     const { docDetails, SetDocDetails } = useContext(docDetailsContext)
     const [activeTab, setActiveTab] = useState("dashboard")
-    const endTimeRef = useRef('')
     const timeFormRef = useRef('')
     const editFormRef = useRef('')
     const [email, setEmail] = useState('')

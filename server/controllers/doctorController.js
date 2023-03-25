@@ -374,6 +374,7 @@ export const getDoctorDashboard = (req,res)=>{
                 appointmentModel.count({doctorId:req.doctorLogged,status:'booked'}).then((count)=>{
                     response.upcomingAppointments = count
                     getAppointmentCountDoctor(req.doctorLogged).then((count)=>{
+                        console.log(count);
                         appointmentGraph[0].data = count
                         response.appointmentGraph = appointmentGraph
                         res.status(200).json(response)

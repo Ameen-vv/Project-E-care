@@ -86,9 +86,9 @@ function Header() {
 							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
 
 						)}
-						{user==='doctor'&& NavItemDoctor.map((item) =>
+						{/* {user==='doctor'&& NavItemDoctor.map((item) =>
 							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
-						)}
+						)} */}
 						{!user&& NavitemCommon.map((item) =>
 							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
 						)}

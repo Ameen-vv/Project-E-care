@@ -11,7 +11,6 @@ function Home() {
         <Header/>
         <Banner/>
         <Departments/>
-        <ServicesSection/>
         <Footer/>
     </div>
   )

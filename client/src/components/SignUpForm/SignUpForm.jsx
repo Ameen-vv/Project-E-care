@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './SignUpForm.css'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { userUrl, doctorUrl } from '../../../apiLinks/apiLinks'
 import { toast, Toaster } from 'react-hot-toast'
@@ -32,7 +32,7 @@ const SignUpForm = () => {
     const [loading, setLoading] = useState(false)
     const [departmentDetails, setDepartmentDetails] = useState([])
 
-
+   
     useEffect(() => {
         if (signUpForm === 'otp' || signUpForm === 'doctor-otp') {
             const interval = setInterval(() => {
@@ -66,6 +66,8 @@ const SignUpForm = () => {
             }).finally(() => setLoading(false))
         }
     }, [signUpForm])
+
+    
 
     const userData = {
         fullName,

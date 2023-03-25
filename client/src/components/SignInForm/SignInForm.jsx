@@ -5,6 +5,8 @@ import axios from 'axios'
 import { userUrl, doctorUrl } from '../../../apiLinks/apiLinks'
 import { firebaseContext, userContext } from '../../store/Contexts'
 import { toast, Toaster } from 'react-hot-toast'
+import { FcGoogle } from "react-icons/fc";
+
 
 const SignInForm = () => {
     const {user,setUser} = useContext(userContext)
@@ -106,7 +108,9 @@ const SignInForm = () => {
             }).finally(()=>setLoading(false))
         })
     }
-
+    const doctorNavigate = ()=>{
+        
+    }
     return (
         <section className="bg-white dark:bg-gray-900">
             <Toaster/>
@@ -157,11 +161,13 @@ const SignInForm = () => {
                                     <input type="email" placeholder="johnsnow@example.com" onChange={(e) => setEmail(e.target.value)} className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md md:w-3/4 dark:placeholder-gray-400 dark:bg-gray-900 dark:text-gray-800 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                                 </div>
                                 <div>
-                                    <label className="block mb-2 text-sm text-gray-600 dark:text-gray-400">Password</label>
+                                    <label className="block  text-sm text-gray-600 dark:text-gray-400">Password</label>
                                     <input type="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md md:w-3/4 dark:placeholder-gray-400 dark:bg-gray-900 dark:text-gray-800 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
+                                    <p className='text-textBlue cursor-pointer text-sm mb-1' onClick={() => setSignInForm('forgot-pass')}>forgot password ?</p>
                                 </div>
+                                
                                 <button
-                                    className="flex sign-in items-center justify-between w-1/2 md:w-1/5 px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform  rounded-md sign-up focus:outline-none  focus:ring focus:ring-blue-300 focus:ring-opacity-50"  >
+                                    className="flex sign-in items-center justify-between w-full md:w-3/4 px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform  rounded-md sign-up focus:outline-none  focus:ring focus:ring-blue-300 focus:ring-opacity-50"  >
                                     <span>Sign In </span>
 
                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor">
@@ -170,32 +176,17 @@ const SignInForm = () => {
                                             clipRule="evenodd" />
                                     </svg>
                                 </button>
-
-                               
-
                                </form>
+                               
+                               <hr className='mt-3 w-full md:w-3/4' />
                                 <button
                                     onClick={googleLogin}
-                                    className="mt-3 flex items-center justify-center w-64 px-6 py-3 text-sm font-medium text-gray-800 transition-colors duration-300 transform bg-white border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    className="mt-3 mb-3 flex items-center justify-center  w-full md:w-3/4 px-6 py-3 text-sm font-medium text-gray-800 transition-colors duration-300 transform  border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none   focus:ring-blue-500"
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="#EA4335"
-                                        className="w-5 h-5 mr-2"
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M17.14 8.968h-.848v-.834h-6.2v3.166h4.28c-.185 1.114-.885 2.784-4.28 2.784-2.568 0-4.672-2.094-4.672-4.668s2.104-4.67 4.672-4.67c1.312 0 2.197.55 2.712 1.018l1.847-1.784c-.948-.86-2.17-1.392-4.56-1.392-3.85 0-7.24 2.77-7.24 8.106s3.39 8.106 7.24 8.106c4.254 0 6.812-2.898 6.812-6.916v-.002z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
+                                    <FcGoogle className='h-5 w-5 me-2'/>
                                     <span>Sign in with Google</span>
                                 </button>
-
-
-                               
-                                <p className='text-primary cursor-pointer' onClick={() => setSignInForm('forgot-pass')}>forgot password ?</p>
+                                <p className='text-textBlue cursor-pointer text-sm mb-1' onClick={()=>Navigate('/signUp')}>Don't have an acount ? <a className='text-primary'>Register</a></p>
                             </>
                         }
                         {
@@ -220,7 +211,7 @@ const SignInForm = () => {
 
 
                                 <button
-                                    className="flex sign-in items-center justify-between w-1/2 md:w-1/5 px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform  rounded-md sign-up focus:outline-none  focus:ring focus:ring-blue-300 focus:ring-opacity-50">
+                                    className="flex sign-in items-center justify-between w-full md:w-3/4 px-6 py-3 text-sm tracking-wide text-white capitalize transition-colors duration-300 transform  rounded-md sign-up focus:outline-none  focus:ring focus:ring-blue-300 focus:ring-opacity-50"  >
                                     <span>Sign In </span>
 
                                     <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor">
@@ -229,9 +220,9 @@ const SignInForm = () => {
                                             clipRule="evenodd" />
                                     </svg>
                                 </button>
-                                {/* {userErr &&
-                                        <p className='text-danger mt-2'>Invalid email or password</p>} */}
+                                <p className='text-textBlue cursor-pointer text-sm mb-1' onClick={()=>Navigate('/signUp')}>Don't have an acount ? <a className='text-primary'>Register</a></p>
                             </form>
+                            
                         }{
                             signInForm === 'forgot-pass' &&
                             <form className="grid grid-cols-1 gap-6 mt-10 md:grid-cols-1 " onSubmit={forgotPass} >
@@ -249,8 +240,7 @@ const SignInForm = () => {
                                             clipRule="evenodd" />
                                     </svg>
                                 </button>
-                                {/* {userErr &&
-                                    <p className='text-danger'>Invalid email</p>} */}
+                               
 
                             </form>
                         }
@@ -274,8 +264,7 @@ const SignInForm = () => {
                                             clipRule="evenodd" />
                                     </svg>
                                 </button>
-                                {/* {userErr &&
-                                    <p className='text-danger'>Invalid Otp</p>} */}
+                              
                             </form>
                         }
 

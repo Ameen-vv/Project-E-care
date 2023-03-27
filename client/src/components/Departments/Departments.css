@@ -85,6 +85,7 @@
 }
   
   .department-image {
+    display: none;
     margin-bottom: 2rem;
   }
   
@@ -107,7 +108,7 @@
     text-transform: uppercase;
   }
   
-  @media screen and (min-width: 900px) {
+  @media screen and (min-width: 700px) {
     .department-container {
       flex-direction: row;
       padding: 2.5rem;
@@ -129,7 +130,7 @@
     }
   
     .department-header h3 {
-      font-size: 25px;
+      font-size: 20px;
     }
   
     .department-content {
@@ -138,22 +139,23 @@
     }
   
     .department-image {
+      display: block;
       margin-right: 1rem;
       margin-bottom: 0;
       max-width: 100%;
     }
   
     .department-description {
-      width: 38rem;  
+      width: 30rem;  
       flex: 1;
     }
     .department-image img {
         height: 200px;
-        width: 600px;
+        width: 200px;
         border-radius: 5px;
       }
     .department-head{
-        font-size: 2rem;
+        font-size: 1.5rem;
       }
       .department-list li {
         width: 20vw;
@@ -170,9 +172,9 @@
   }
   .book-btn{
     background-color: #0AB3B8;
-    padding: 0.5rem;
+    padding: 1rem;
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
   }
 .book-btn:hover{
     background-color: #F2F6FF;

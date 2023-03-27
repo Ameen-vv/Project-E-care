@@ -255,7 +255,6 @@ export const getDepartment = async (req, res) => {
 
         let count = await departmentModel.countDocuments(query)
         departmentModel.find(query).limit(pageNo * 4).then((departments) => {
-            console.log(count);
             res.status(200).json({ departments, count })
         })
     } catch (err) {
@@ -316,9 +315,7 @@ export const bookAppoinment = (req, res) => {
                             price: amount
                         })
                         newAppointment.save().then((appointment) => {
-
                             res.status(200).json({ available: 'available', appointmentId: appointment._id, price: amount })
-
                         })
                     }
                 })
@@ -487,3 +484,5 @@ export const payWithWallet = (req,res)=>{
         res.status(500)
     }
 }
+
+

@@ -245,51 +245,51 @@ export const adminCheck = (req, res) => {
 
 
 export const editDepartment = async (req, res) => {
-   try{
-    const data = req.body.departmentDetails
-    const image = req.body?.imageData
-    const depId = req.params.id
-    let departmentName = await titleCase(data.name)
-    departmentModel.findOne({ name: departmentName }).then(async (department) => {
-        if (department) {
-            res.status(200).json({ status: 'exist' })
-        } else {
-            let diseases = await data.diseases.split(',')
-            if (image) {
-                cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then((imageData) => {
+    try {
+        const data = req.body.departmentDetails
+        const image = req.body?.imageData
+        const depId = req.params.id
+        let departmentName = await titleCase(data.name)
+        departmentModel.findOne({ name: departmentName }).then(async (department) => {
+            if (department) {
+                res.status(200).json({ status: 'exist' })
+            } else {
+                let diseases = await data.diseases.split(',')
+                if (image) {
+                    cloudinary.uploader.upload(image, { upload_preset: 'Ecare' }).then((imageData) => {
+                        departmentModel.updateOne({ _id: depId }, {
+                            $set: {
+                                name: departmentName,
+                                commonDiseases: diseases,
+                                description: data.description,
+                                imageUrl: imageData.secure_url
+                            }
+                        }).then((result) => {
+                            result.acknowledged ? res.status(200).json({ status: 'success' }) : res.status(200).json({ status: 'error' })
+
+                        })
+                    })
+                } else {
+
                     departmentModel.updateOne({ _id: depId }, {
                         $set: {
                             name: departmentName,
                             commonDiseases: diseases,
                             description: data.description,
-                            imageUrl: imageData.secure_url
                         }
                     }).then((result) => {
                         result.acknowledged ? res.status(200).json({ status: 'success' }) : res.status(200).json({ status: 'error' })
 
+
                     })
-                })
-            } else {
+                }
 
-                departmentModel.updateOne({ _id: depId }, {
-                    $set: {
-                        name: departmentName,
-                        commonDiseases: diseases,
-                        description: data.description,
-                    }
-                }).then((result) => {
-                    result.acknowledged ? res.status(200).json({ status: 'success' }) : res.status(200).json({ status: 'error' })
-
-
-                })
             }
-
-        }
-    })
-   }
-   catch(err){
-    res.status(500)
-   }
+        })
+    }
+    catch (err) {
+        res.status(500)
+    }
 }
 
 
@@ -297,10 +297,10 @@ export const getDashboardDetails = (req, res) => {
     try {
         let response = {}
         let userGraph = [{
-            name:'Users',
+            name: 'Users',
         }]
         let appointmentGraph = [{
-            name:'Appointments',
+            name: 'Appointments',
         }]
         getUserCountGraph().then(userCount => {
             userGraph[0].data = userCount
@@ -308,11 +308,11 @@ export const getDashboardDetails = (req, res) => {
             getAppointmentCountGraph().then(appointmentCount => {
                 appointmentGraph[0].data = appointmentCount
                 response.appointmentGraph = appointmentGraph
-                userModel.count().then(count=>{
+                userModel.count().then(count => {
                     response.users = count
-                    doctorModel.count().then(count=>{
+                    doctorModel.count().then(count => {
                         response.doctors = count
-                        appointmentModel.count().then(count=>{
+                        appointmentModel.count().then(count => {
                             response.appointments = count
                             res.status(200).json(response)
                         })
@@ -327,13 +327,29 @@ export const getDashboardDetails = (req, res) => {
 }
 
 
-export const getSales = (req,res)=>{
-    try{
-        appointmentModel.find().populate('patientId','fullName email _id').populate('doctorId','fullName ').sort({createdAt:1}).then((appointments)=>{
-            res.status(200).json(appointments)
-        })
+export const getSales = (req, res) => {
+    try {
+        let startDate = req.query.startDate ?? null;
+        let endDate = req.query.endDate ?? null;
+        let query = {};
+
+        if (startDate && endDate) {
+            query.createdAt = { $gte: startDate, $lte: endDate };
+        } else if (startDate) {
+            query.createdAt = { $gte: startDate };
+        } else if (endDate) {
+            query.createdAt = { $lte: endDate };
+        }
+
+        appointmentModel
+            .find(query)
+            .populate("patientId", "fullName email _id")
+            .populate("doctorId", "fullName ")
+            .sort({ createdAt: 1 })
+            .then((appointments) => {
+                res.status(200).json(appointments);
+            });
+    } catch (err) {
+        res.status(500);
     }
-    catch(err){
-        res.status(500)
-    }
-}
+};

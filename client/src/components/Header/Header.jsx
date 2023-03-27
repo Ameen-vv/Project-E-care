@@ -79,7 +79,7 @@ function Header() {
 			<>
 				<header>
 					<div className="logoDiv">
-						<img className="logo" src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" height={80} width={80} />
+						<img className="logo  h-9  " src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" />
 					</div>
 					<nav ref={navRef} className=' navMar mx-auto' >
 						{user==='user'&& NavItemUser.map((item) =>

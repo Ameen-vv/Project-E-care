@@ -11,12 +11,6 @@ import { FcGoogle } from "react-icons/fc";
 const SignInForm = () => {
     const {user,setUser} = useContext(userContext)
     const Navigate = useNavigate()
-    const userCheck = ()=>{
-         user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/') : Navigate('/signIn') )
-    }
-    useEffect(() => {
-        userCheck()
-     }, [])
     const [signInForm, setSignInForm] = useState('client')
     const { signInWithGoogle } = useContext(firebaseContext)
     const [email, setEmail] = useState('')
@@ -26,7 +20,12 @@ const SignInForm = () => {
     const [reject, setReject] = useState(false)
     const [otp, setOtp] = useState('')
     const [loading,setLoading] = useState(false)
-
+    const userCheck = ()=>{
+        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/') : Navigate('/signIn') )
+   }
+   useEffect(() => {
+       userCheck()
+    }, [])
 
     let userData = {
         email,

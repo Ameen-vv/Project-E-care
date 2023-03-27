@@ -299,8 +299,17 @@ export const editProfilePic = (req, res) => {
 
 export const getAppointmentsDoctor = (req,res)=>{
     try{
-        appointmentModel.find({doctorId:req.doctorLogged,status:'booked',paymentStatus:true}).populate('patientId','fullName phone email _id')
+        const date = req.query.date ?? null
+        console.log(date);
+        let query = {
+            doctorId:req.doctorLogged,
+            status:'booked',
+            paymentStatus:true
+        }
+        date && (query.date = date)
+        appointmentModel.find(query).populate('patientId','fullName phone email _id')
         .then((appointments)=>{
+            console.log(appointments);
             res.status(200).json(appointments)
         })
     }   
@@ -393,7 +402,6 @@ export const getDoctorDashboard = (req,res)=>{
 export const getSalesDoctor = (req,res)=>{
     try{
         appointmentModel.find({doctorId:req.doctorLogged}).populate('patientId','fullName email _id').sort({createdAt:-1}).then((appointments)=>{
-            console.log(appointments);
             res.status(200).json(appointments)
         })
     }

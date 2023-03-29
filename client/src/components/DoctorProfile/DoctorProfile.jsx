@@ -350,9 +350,12 @@ const DoctorProfile = () => {
                         </div>
                     </div>
                 );
-            case "sales": return (
-                sales.length === 0 ? <div className="flex flex-col items-center">
-                <BellIcon className="h-24 w-24 text-gray-300 mb-4 mt-4" />
+            case "sales":
+            return (
+                <>
+                <h2 className="text-xl text-textBlue font-bold mb-4">Your Sales</h2>
+               { sales.length === 0 ? <div className="flex flex-col items-center">
+                <BellIcon className="h-20 w-20 text-gray-300 mb-4 mt-4" />
                 <p className="text-lg leading-7 text-gray-500">You have no sales.</p>
             </div> :
                 <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
@@ -379,13 +382,14 @@ const DoctorProfile = () => {
             
                         </div>
                     ))}
-                </div>
+                </div>}
+                </>
               )
 
             case "appointments":
                 return (
                     <>
-                    <h2 className="text-xl font-bold mb-4">Your appointments</h2>
+                    <h2 className="text-xl text-textBlue font-bold mb-4">Your appointments</h2>
                     <div className="flex  w-full justify-end bg-gray-100">
                     <div className="flex mt-2    ">
                     <input type="date" id='startDate' className="me-2 rounded-md border border-gray-300 p-2 ms-auto" value={date} onChange={(e)=>setDate(e.target.value)} />
@@ -394,11 +398,9 @@ const DoctorProfile = () => {
                     
                 </div>
                     {appointments.length === 0 ? <div className="flex flex-col items-center">
-                        <BellIcon className="h-24 w-24 text-gray-300 mb-4" />
+                        <BellIcon className="h-20 w-20 text-gray-300 mb-4" />
                         <p className="text-lg leading-7 text-gray-500">You have no appointments scheduled.</p>
                     </div> : <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
-                        
-                        
                         {appointments.map(appointment => (
                             <div className="mb-2 bg-white rounded-lg p-3 flex flex-col md:flex-row items-center justify-between" key={appointment._id}>
                                 <div className="flex-grow text-gray-600 text-sm flex">
@@ -432,7 +434,7 @@ const DoctorProfile = () => {
             case "edit-profile":
                 return (
                     <div>
-                        <h2 className="text-3xl font-bold mb-4">Edit Profile</h2>
+                        <h2 className="text-xl text-textBlue font-bold mb-4">Edit Profile</h2>
                         <form onSubmit={editProfile} ref={editFormRef}>
                             <div className="mb-4">
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="email">

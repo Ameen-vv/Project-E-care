@@ -8,11 +8,9 @@ import Contexts from './store/Contexts'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
   <Provider store={store}>
   <Contexts>
   <App />
   </Contexts>
   </Provider>
-  </React.StrictMode>
 )

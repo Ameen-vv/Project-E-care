@@ -3,13 +3,13 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB64RG-rc4sbcIOdRyMkO0gwVKqEufiW5k",
-  authDomain: "e-care-d9e6a.firebaseapp.com",
-  projectId: "e-care-d9e6a",
-  storageBucket: "e-care-d9e6a.appspot.com",
-  messagingSenderId: "483062788212",
-  appId: "1:483062788212:web:4a66dd8ee045d605a72121",
-  measurementId: "G-SJC57DNPHD"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTHDOMAIN_FIREBASE,
+  projectId: import.meta.env.VITE_FIREBASE_PRO_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MSG_ID,
+  appId: import.meta.env.VITE_FIREBASE_API_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

@@ -25,11 +25,11 @@ const NavItemUser = [
 		path: '/departments'
 	},
 	{
-		page: 'Wallet',
-		path: '/wallet'
+		page:'Doctors',
+		path:'/doctorList'
 	},
 	{
-		page: 'About',
+		page: 'About Us',
 		path:'/'
 	}
 
@@ -70,27 +70,42 @@ function Header() {
 	const navRef = useRef();
 	const Navigate = useNavigate()
 	const [open, SetOpen] = useState(false)
-	const {user,SetUser} = useContext(userContext)
+	const {user,setUser} = useContext(userContext)
 	const [anchorEl, setAnchorEl] = useState(null)
 	const dropDown = Boolean(anchorEl);
-	
+
+
+	const userLogOut = ()=>{
+		console.log('hre');
+		setAnchorEl(null)
+		localStorage.removeItem('userToken')
+		setUser(null)
+		Navigate('/signIn')
+	}
+
+	const doctorLogOut = ()=>{
+		localStorage.removeItem('doctorToken')
+		setUser(null)
+		Navigate('/signIn')
+	}
+
 	return (
 		<drawerContext.Provider value={{ open, SetOpen }}>
 			<>
 				<header>
 					<div className="logoDiv">
-						<img className="logo  h-9  " src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" />
+						<img className="logo  h-9  cursor-pointer" src="\images\e-care-high-resolution-logo-color-on-transparent-background (1).png" alt="" onClick={()=>Navigate('/')} />
 					</div>
 					<nav ref={navRef} className=' navMar mx-auto' >
 						{user==='user'&& NavItemUser.map((item) =>
-							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
+							<a key={item.page} onClick={() => Navigate(item.path)} className='me-3' >{item.page}</a>
 
 						)}
 						{/* {user==='doctor'&& NavItemDoctor.map((item) =>
 							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
 						)} */}
 						{!user&& NavitemCommon.map((item) =>
-							<a key={item.page} onClick={() => Navigate(item.path)} className='me-4' >{item.page}</a>
+							<a key={item.page} onClick={() => Navigate(item.path)} className='me-3' >{item.page}</a>
 						)}
 
 						<button
@@ -155,7 +170,11 @@ function Header() {
 										setAnchorEl(null)
 										Navigate('/profile')
 									}}>Profile</MenuItem>
-									<MenuItem onClick={()=>setAnchorEl(null)}>Logout</MenuItem>
+									<MenuItem onClick={()=>{
+										setAnchorEl(null)
+										Navigate('/wallet')
+									}}>Wallet</MenuItem>
+									<MenuItem onClick={userLogOut}>Logout</MenuItem>
 								</Menu>
 							</div>
 						</div>
@@ -181,7 +200,7 @@ function Header() {
 									}}
 								>
 									<MenuItem onClick={()=>{Navigate('/doctor/profile')}}>Profile</MenuItem>
-									<MenuItem onClick={()=>setAnchorEl(null)}>Logout</MenuItem>
+									<MenuItem onClick={doctorLogOut}>Logout</MenuItem>
 								</Menu>
 							</div>
 						</div>

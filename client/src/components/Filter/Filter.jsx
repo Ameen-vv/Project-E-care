@@ -45,11 +45,11 @@ const Filter = () => {
                             <div className="p-2 text-sm">
                                 <label className="inline-flex items-center mt-2">
                                     <input type="radio" name="sortOption" value="price-lt-700" className="form-radio h-3 w-3 text-indigo-600 focus:outline-none" checked={filter==='price-lt-700'} onChange={(e)=>setFilter(e.target.value)}/>
-                                    <span className="ml-2 text-gray-700">less than 700</span>
+                                    <span className="ml-2 text-gray-700">Price  less than 700</span>
                                 </label>
                                 <label className="inline-flex items-center mt-2">
                                     <input type="radio" name="sortOption" value="price-lt-1000" className="form-radio h-3 w-3 text-indigo-600" checked={filter==='price-lt-1000'} onChange={(e)=>setFilter(e.target.value)}/>
-                                    <span className="ml-2 text-gray-700">less than 1000</span>
+                                    <span className="ml-2 text-gray-700">Price less than 1000</span>
                                 </label>
                                 <label className="inline-flex items-center mt-2 ">
                                     <input type="radio" name="sortOption" value="exp-gt-10" className="form-radio h-3 w-3 text-indigo-600" checked={filter==='exp-gt-10'} onChange={(e)=>setFilter(e.target.value)}/>

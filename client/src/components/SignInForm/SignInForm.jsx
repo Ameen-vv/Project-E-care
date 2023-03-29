@@ -98,7 +98,8 @@ const SignInForm = () => {
             setLoading(true)
             axios.post(`${userUrl}googleUserDetails`, result.user).then((response) => {
                 if (response.data.logIn) {
-                    localStorage.setItem('doctorToken',response.data.token)
+                    localStorage.setItem('userToken',response.data.token)
+                    setUser('user')
                     Navigate('/')
                 }
                 response.data.block && toast.error('your acount is blocked')

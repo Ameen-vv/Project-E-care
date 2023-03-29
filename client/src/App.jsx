@@ -18,6 +18,7 @@ import AdminLogin from './pages/Admin/LogIn/AdminLogin'
 import RejectedPage from './pages/Doctor/Rejected_Page/RejectedPage'
 import AdminRoutes from './pvtRoutes/AdminRoutes'
 import DoctorList from './pages/User/DoctorViewingPage/DoctorList'
+import AboutUs from './pages/AboutUs/AboutUs'
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
         <Route path='/departments' element={<DepartmentPage/>}/>
         <Route path='/doctor/verification' element={<ProfileVerification/>}/>
         <Route path='/doctor/rejected' element={<RejectedPage/>}/>
+        <Route path='/aboutUs' element={<AboutUs/>}/>
       </Routes>
     </Router>
   )

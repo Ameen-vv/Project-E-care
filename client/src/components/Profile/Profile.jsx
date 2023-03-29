@@ -4,6 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { PhotographIcon, PencilAltIcon, BellIcon, CalendarIcon } from "@heroicons/react/outline";
 import axios from "axios";
 import { userUrl } from "../../../apiLinks/apiLinks";
+import Swal from 'sweetalert2/dist/sweetalert2.js'
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 
 const Profile = () => {
@@ -20,6 +28,8 @@ const Profile = () => {
     const Navigate = useNavigate()
     const token = localStorage.getItem('userToken')
     const headers = { Authorization: token }
+    const [open, setOpen] = useState(false)
+    const [appointmentId,setAppointmentId] = useState('')
 
     useEffect(() => {
         setLoading(true)
@@ -59,6 +69,7 @@ const Profile = () => {
         phone && (updatedData.phone = phone)
         address && (updatedData.address = address)
         axios.post(`${userUrl}editProfile`, updatedData, { headers }).then((response) => {
+            response.status === 200 && toast.success('edited successfully')
             response.status === 200 && setResetPage(resetPage => !resetPage)
         }).catch((err) => {
             err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something went wrong')
@@ -81,6 +92,18 @@ const Profile = () => {
         }
     }
 
+    const cancelAppointmentMenu = (id) => {
+        setAppointmentId(id)
+        setOpen(true)
+    }   
+    const cancelAppointment = () => {
+        axios.get(`${userUrl}cancelAppointment?appointmentId=${appointmentId}`,{headers}).then((response)=>{
+            response.data.cancel && setResetPage(resetPage => !resetPage) 
+            setOpen(false)
+            response.data.cancel ? toast.success('Appointment Cancelled') : toast.error('Cannot Cancel the appointement please try again')
+
+        })
+    } 
 
     const renderTabContent = () => {
         switch (activeTab) {
@@ -139,9 +162,11 @@ const Profile = () => {
             case "history":
 
                 return (
-                    history.length === 0 ? <div className="flex flex-col items-center">
-                        <BellIcon className="h-24 w-24 text-gray-300 mb-4 mt-4" />
-                        <p className="text-lg leading-7 text-gray-500">You have no notifications.</p>
+                    <>
+                    <h2 className="text-xl text-textBlue font-bold mb-4">History</h2>
+                    {history.length === 0 ? <div className="flex flex-col items-center">
+                        <BellIcon className="h-20 w-20 text-gray-300 mb-4 mt-4" />
+                        <p className="text-lg leading-7 text-gray-500">You have no history.</p>
                     </div> :
                         <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
                             <h2 className="text-xl font-bold mb-4">Appointment History</h2>
@@ -151,24 +176,28 @@ const Profile = () => {
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                                     </svg><p className="text-gray-600 flex-grow  tracking-wide	text-textBlue text-sm">Doctor:<a className="text-textBlue font-semibold me-3"> Dr {history?.doctorId?.fullName}
                                     </a>  Date: <a className="text-textBlue font-semibold me-3">{history?.date.substring(0, 10)}</a>  Time:  <a className="text-textBlue font-semibold me-3"> {history?.slot}</a> booked on: <a className="text-textBlue font-semibold me-3">{history?.createdAt.substring(0, 10)}</a>
-                                    status:{
-                                        history?.status === 'visited' && <a className="text-textBlue font-semibold">Consulted</a>
-                                    }
-                                    {
-                                        history?.status === 'unVisited' && <a className="text-textBlue font-semibold">not consulted</a>
-                                    }
-                                    {
-                                        history?.status === 'cancelled' && <a className="text-textBlue font-semibold">Cancelled</a>
-                                    } 
+                                        status:{
+                                            history?.status === 'visited' && <a className="text-textBlue font-semibold">Consulted</a>
+                                        }
+                                        {
+                                            history?.status === 'unVisited' && <a className="text-textBlue font-semibold">not consulted</a>
+                                        }
+                                        {
+                                            history?.status === 'cancelled' && <a className="text-textBlue font-semibold">Cancelled</a>
+                                        }
                                     </p>
                                 </div>
                             ))}
-                        </div>
+                        </div>}
+                        </>
                 );
             case "appointments":
                 return (
-                    appointments.length === 0 ? <div className="flex flex-col items-center">
-                        <BellIcon className="h-24 w-24 text-gray-300 mb-4" />
+                    <>
+                    <h2 className="text-xl text-textBlue font-bold mb-4">Appointments</h2>
+
+                    {appointments.length === 0 ? <div className="flex flex-col items-center">
+                        <BellIcon className="h-20 w-20 text-gray-300 mb-4" />
                         <p className="text-lg leading-7 text-gray-500">You have no appointments scheduled.</p>
                     </div> : <div className="bg-gray-100 p-4 md:max-w-full mx-auto">
                         <h2 className="text-xl font-bold mb-4">Your appointments</h2>
@@ -178,18 +207,21 @@ const Profile = () => {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
 
-                                <p className="text-gray-600 flex-grow tracking-wide	text-textBlue text-sm">You  have  booked  an  appointment  with <a className="text-textBlue font-semibold"> Dr {appointment?.doctorId?.fullName}</a>  on  
-                                <a className="text-textBlue font-semibold">{appointment?.date.substring(0, 10)}</a>  between  <a className="text-textBlue font-semibold">{appointment?.slot}</a></p>
-
+                                <p className="text-gray-600 flex-grow tracking-wide	text-textBlue text-sm">You  have  booked  an  appointment  with <a className="text-textBlue font-semibold"> Dr {appointment?.doctorId?.fullName}</a>  on
+                                    <a className="text-textBlue font-semibold">{appointment?.date.substring(0, 10)}</a>  between  <a className="text-textBlue font-semibold">{appointment?.slot}</a></p>
+                                <button class="bg-red  text-blue-700 font-semibold hover:text-blue-400   border-none border-blue-500 hover:border-transparent rounded " onClick={()=>cancelAppointmentMenu(appointment._id)}>
+                                    Cancel
+                                </button>
                             </div>
                         ))}
-                    </div>
+                    </div>}
+                    </>
                 );
 
             case "edit-profile":
                 return (
                     <div>
-                        <h2 className="text-3xl font-bold mb-4">Edit Profile</h2>
+                        <h2 className="text-xl text-textBlue font-bold mb-4">Edit Profile</h2>
                         <form ref={editFormRef} onSubmit={editProfile}>
                             <div className="mb-4">
                                 <label className="block text-gray-700 font-bold mb-2" htmlFor="email">
@@ -224,6 +256,27 @@ const Profile = () => {
     return (
         <>
             <Toaster />
+            <Dialog
+                open={open}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+                onClose={()=>setOpen(false)}
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Cancel Appointment ?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                       Are you sure you want to cancel appointment ?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={()=>setOpen(false)} >Disagree</Button>
+                    <Button autoFocus onClick={cancelAppointment}>
+                        Agree
+                    </Button>
+                </DialogActions>
+            </Dialog>
             {loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
             </div>}

@@ -7,7 +7,7 @@ import { drPaginationContext } from "../../pages/User/DoctorViewingPage/DoctorLi
 const List = ({ data }) => {
 
   const {page,setPage} = useContext(drPaginationContext)
-  let pageCount = Math.ceil(data.count/4)
+  let pageCount = Math.ceil(data.count/8)
 
 
   const Navigate = useNavigate()
@@ -17,7 +17,7 @@ const List = ({ data }) => {
       <div>
         <div class="container my-12 mx-auto px-4 md:px-12 justify-center w-full flex">
           <div class="flex flex-wrap -mx-1 lg:-mx-4 lg:w-4/5 sm:w-full">
-            { data.doctors?.length === 0 && <h1 className="text-lg">no results </h1>}
+            { data.doctors?.length === 0 && <h1 className="text-lg">No Doctors Available </h1>}
             {data?.doctors?.map((doctor) => (
               <div onClick={()=>Navigate('/doctorView',{state:doctor})} class="my-1 px-1 w-full md:w-1/2 lg:my-4 lg:px-3 lg:w-1/3  xl:w-1/4 lg:my-4 lg:px-4  cursor-pointer hover:scale-105 ease-in-out duration-200 mb-3">
                 <article class="overflow-hidden rounded-lg shadow-lg bg-white hover:bg-blue-50 h-[auto]">

@@ -12,23 +12,25 @@ export const drPaginationContext = createContext()
 const DoctorList = () => {
   const location = useLocation()
   const [department, setDepartment] = useState('')
+  let result = useSelector(state => state.doctor)
   const [sort, setSort] = useState('')
   const [filter, setFilter] = useState('')
   const [search, setSearch] = useState('')
-  let result = useSelector(state => state.doctor)
   const [page, setPage] = useState(1)
   const dispatch = useDispatch()
+ 
   useEffect(() => {
+    
     location?.state?.departmentId && setDepartment(location?.state?.departmentId)
     dispatch(fetchDoctors({ department, sort, filter, page, search }))
   }, [department, sort, filter, page, search])
-
+  
 
   return (
     <drPaginationContext.Provider value={{ page, setPage, setDepartment, setSort, sort, filter, setFilter, setSearch }}>
       <div>
         <Toaster />
-        {result.loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+        {result.loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-20 z-50">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
         </div>}
         <Header />

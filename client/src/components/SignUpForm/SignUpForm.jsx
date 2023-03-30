@@ -73,7 +73,7 @@ const SignUpForm = () => {
     }, [signUpForm])
 
     const userCheck = ()=>{
-        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/doctor/profile') : Navigate('/signIn') )
+        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/doctor/profile') : Navigate('/signUp') )
    }
 
     const userData = {

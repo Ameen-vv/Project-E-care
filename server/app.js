@@ -19,7 +19,7 @@ app.use(express.urlencoded({limit:"50mb",extended:true,parameterLimit:50000}))
 app.use(logger('dev'))
 connection()
 app.use(cors({
-    origin:['http://localhost:4000'],
+    origin:['http://localhost:4000','https://ecare-service.netlify.app/'],
     methods:['GET','POST','PUT','DELETE','PATCH'],
     credentials:true,
     allowedHeaders:[

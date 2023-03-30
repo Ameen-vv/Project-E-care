@@ -164,6 +164,7 @@ export default function TemporaryDrawer() {
               <ListItemIcon style={{ color: '#fff' }}>
                 {item.page === 'Home' && <HomeIcon />}
                 {item.page === 'Departments' && <VaccinesIcon />}
+                {item.page === 'Doctors' && <VaccinesIcon />}
                 {item.page === 'About us' && <InfoIcon />}
                 {item.page === 'Sign In' && <LoginIcon />}
                 {item.page === 'Register' && <HowToRegIcon />}

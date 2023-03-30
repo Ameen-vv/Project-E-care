@@ -55,6 +55,10 @@ const NavitemCommon = [
     path: '/departments'
   },
   {
+    page: 'Doctors',
+    path: '/doctorList'
+  },
+  {
     page: 'About us',
     path: '/aboutUs'
   },

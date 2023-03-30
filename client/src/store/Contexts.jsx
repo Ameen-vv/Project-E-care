@@ -10,7 +10,7 @@ export const userContext = createContext('')
 
 
 function Contexts({children}) {
-  const [user, setUser] = useState(localStorage.getItem('doctorToken') ? 'doctor' : 'user' );
+  const [user, setUser] = useState(localStorage.getItem('doctorToken') ? 'doctor' : (localStorage.getItem('userToken') ? 'user' : null ) );
   const doctorCheck = () => {
     const token = localStorage.getItem('doctorToken');
    if(token){

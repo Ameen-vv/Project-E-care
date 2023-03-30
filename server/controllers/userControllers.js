@@ -266,14 +266,21 @@ export const saveGoogleUser = (req, res) => {
                     newUser
                         .save()
                         .then((newUser) => {
-                            const token = generateToken({
-                                userId: newUser._id,
-                                name: newUser.fullName,
-                                type: 'user'
+                            let wallet = new walletModel({
+                                userId: newUser._id
                             })
-                            response.logIn = true
-                            response.token = token
-                            res.status(200).json(response)
+                            wallet
+                                .save()
+                                .then(() => {
+                                    const token = generateToken({
+                                        userId: newUser._id,
+                                        name: newUser.fullName,
+                                        type: 'user'
+                                    })
+                                    response.logIn = true
+                                    response.token = token
+                                    res.status(200).json(response)
+                                })                 
                         })
                 }
             })

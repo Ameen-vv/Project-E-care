@@ -31,7 +31,6 @@ function App() {
             <Route path='/book' element={<Appointment/>}/>
             <Route path = '/wallet' element={<WalletPage/>}/>
             <Route path='/profile' element={<ProfilePage/>}/>
-            <Route path='/doctorList' element={<DoctorList/>}/>
             <Route path='/doctorView' element={<DoctorPage/>}/>
         </Route>
         <Route element = {<DoctorRoutes/>}>
@@ -44,6 +43,7 @@ function App() {
         <Route path='/admin' element={<AdminLogin/>}/>
         <Route path='/signIn' element={<SignIn/>}/>
         <Route path='/departments' element={<DepartmentPage/>}/>
+        <Route path='/doctorList' element={<DoctorList/>}/>
         <Route path='/doctor/verification' element={<ProfileVerification/>}/>
         <Route path='/doctor/rejected' element={<RejectedPage/>}/>
         <Route path='/aboutUs' element={<AboutUs/>}/>

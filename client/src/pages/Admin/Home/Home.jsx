@@ -26,6 +26,7 @@ import Departments from '../../../components/AdminComponents/departmentTable/Dep
 import DashboardAdmin from '../../../components/AdminComponents/Dashboard/DashboardAdmin'
 import { FaBuilding, FaRegChartBar, FaStethoscope, FaUsers } from 'react-icons/fa'
 import SalesReport from '../../../components/AdminComponents/SalesReport/SalesReport'
+import { useNavigate } from 'react-router-dom'
 
 const drawerWidth = 240;
 
@@ -102,7 +103,8 @@ const option = [
   {
     page:'Sales',
     path:'sales'
-  }
+  },
+ 
   
 ]
 
@@ -110,11 +112,12 @@ export const sideBarContext = createContext('user')
 export const adminLoading = createContext('')
 
 
-function AdminHome() {
+const AdminHome = ()=> {
   const [path,setPath] = useState('dashboard')
   const [adminLoad,setAdminLoad] = useState(false)
   const theme = useTheme();
   const [open, setOpen] = useState(true);
+  const Navigate = useNavigate()
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -129,7 +132,15 @@ function AdminHome() {
  function changeLoading(x){
   setAdminLoad(x)
  }
-  return (
+
+const adminLogOut = ()=>{
+  localStorage.removeItem('adminToken')
+  Navigate('/admin')
+
+} 
+ 
+
+ return (
     <adminLoading.Provider value={{adminLoad,changeLoading}}>
     <sideBarContext.Provider value={{path,changePath}}>
     <>  
@@ -197,7 +208,11 @@ function AdminHome() {
               </ListItemButton>
             </ListItem>
           ))}
+        
         </List>
+        <button className='btn btn-danger me-auto ms-1' onClick={adminLogOut}>
+          Log Out
+         </button>
         <Divider />
         {/* <List>
           {['All mail', 'Trash', 'Spam'].map((text, index) => (

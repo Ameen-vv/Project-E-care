@@ -30,7 +30,7 @@ const NavItemUser = [
 	},
 	{
 		page: 'About Us',
-		path:'/'
+		path:'/aboutUs'
 	}
 
 ]
@@ -61,7 +61,7 @@ const NavitemCommon = [
 	},
 	{
 		page:'About Us',
-		path:'/'
+		path:'/aboutUs'
 	}
 ]
 

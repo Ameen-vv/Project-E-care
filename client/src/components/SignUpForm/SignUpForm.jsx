@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import './SignUpForm.css'
 import { useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { userUrl, doctorUrl } from '../../../apiLinks/apiLinks'
 import { toast, Toaster } from 'react-hot-toast'
+import { userContext } from '../../store/Contexts'
 
 
 const SignUpForm = () => {
@@ -31,7 +32,11 @@ const SignUpForm = () => {
     const [seconds, setSeconds] = useState(30);
     const [loading, setLoading] = useState(false)
     const [departmentDetails, setDepartmentDetails] = useState([])
+    const {user,setUser} = useContext(userContext)
 
+    useEffect(()=>{
+        userCheck()
+    },[])
    
     useEffect(() => {
         if (signUpForm === 'otp' || signUpForm === 'doctor-otp') {
@@ -67,7 +72,9 @@ const SignUpForm = () => {
         }
     }, [signUpForm])
 
-    
+    const userCheck = ()=>{
+        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/doctor/profile') : Navigate('/signIn') )
+   }
 
     const userData = {
         fullName,

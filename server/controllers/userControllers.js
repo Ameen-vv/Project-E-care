@@ -8,13 +8,11 @@ import departmentModel from "../model/departmentModel.js";
 import doctorModel from "../model/doctorSchema.js";
 import appointmentModel from "../model/appointmentSchema.js";
 import { checkingSlotsAvailability } from "./helpers/helpers.js";
-import mongoose from "mongoose";
 import crypto from 'crypto'
 import cloudinary from '../utils/cloudinary.js'
 import Razorpay from "razorpay";
 import walletModel from "../model/walletSchema.js";
 import walletTransactionModel from "../model/walletTransactionsSchem.js";
-import { response } from "express";
 export let otpVerify
 
 

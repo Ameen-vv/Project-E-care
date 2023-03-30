@@ -9,10 +9,10 @@ const AboutUs = () => {
     <>
     <Header/>
     <div className="bg-white px-4 py-8 md:px-16 md:py-12 lg:px-24 lg:py-16">
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 md:mb-8">About Us</h1>
+      <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-textBlue mb-4 md:mb-8">About Us</h1>
       <div className="flex flex-col md:flex-row justify-between">
         <div className="w-full md:w-1/2 lg:w-1/3 mb-4 md:mb-0">
-          <img className="w-full rounded-lg shadow-lg" src="/doctor.jpg" alt="Doctor" />
+          <img className="w-full rounded-lg shadow-lg" src="/images/Banner3.jpg" alt="Doctor" />
         </div>
         <div className="w-full md:w-1/2 lg:w-2/3 pl-0 md:pl-8">
           <p className="text-gray-700 text-lg leading-relaxed mb-4 md:mb-8">

@@ -10,9 +10,10 @@ export const userContext = createContext('')
 
 
 function Contexts({children}) {
-  const [user, setUser] = useState('user');
+  const [user, setUser] = useState(localStorage.getItem('doctorToken') ? 'doctor' : 'user' );
   const doctorCheck = () => {
     const token = localStorage.getItem('doctorToken');
+   if(token){
     const headers = { Authorization: token };
     axios
       .get(`${doctorUrl}authenticate`, { headers })
@@ -22,6 +23,9 @@ function Contexts({children}) {
       .catch(() => {
         setUser(null);
       });
+   }else{
+    setUser(null)
+   }
   };
 
   useEffect(() => {

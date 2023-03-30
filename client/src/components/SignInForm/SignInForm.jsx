@@ -21,7 +21,7 @@ const SignInForm = () => {
     const [otp, setOtp] = useState('')
     const [loading,setLoading] = useState(false)
     const userCheck = ()=>{
-        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/') : Navigate('/signIn') )
+        user === 'user' ? Navigate('/') : (user === 'doctor' ? Navigate('/doctor/profile') : Navigate('/signIn') )
    }
    useEffect(() => {
        userCheck()
@@ -108,9 +108,7 @@ const SignInForm = () => {
             }).finally(()=>setLoading(false))
         })
     }
-    const doctorNavigate = ()=>{
-        
-    }
+    
     return (
         <section className="bg-white dark:bg-gray-900">
             <Toaster/>

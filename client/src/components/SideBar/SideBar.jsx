@@ -32,12 +32,16 @@ const NavItems = [
     path: '/departments'
   },
   {
+    page: 'Doctors',
+    path: '/doctorList'
+  },
+  {
     page: 'Wallet',
     path: '/wallet'
   },
   {
     page: 'About',
-    path: '/'
+    path: '/aboutUs'
   }
 
 ]
@@ -52,7 +56,7 @@ const NavitemCommon = [
   },
   {
     page: 'About us',
-    path: '/'
+    path: '/aboutUs'
   },
   {
     page: 'Register',
@@ -75,7 +79,7 @@ const NavItemDoctor = [
   },
   {
     page: 'About Us',
-    path: '/doctor/home'
+    path: '/aboutUs'
   }
 ]
 const NavItemUser = [
@@ -102,11 +106,19 @@ export default function TemporaryDrawer() {
   const { open, SetOpen } = useContext(drawerContext)
   const { user,setUser } = useContext(userContext)
   const Navigate = useNavigate()
+
+
 	const userLogOut = ()=>{
 		localStorage.removeItem('userToken')
 		setUser(null)
 		Navigate('/signIn')
 	}
+
+  const doctorLogOut = ()=>{
+    localStorage.removeItem('doctorToken')
+    setUser(null)
+    Navigate('/signIn')
+  }
 
   const list = () => (
     <Box
@@ -134,6 +146,7 @@ export default function TemporaryDrawer() {
               <ListItemIcon style={{ color: '#fff' }}>
                 {item.page === 'Home' && <HomeIcon />}
                 {item.page === 'Departments' && <VaccinesIcon />}
+                {item.page === 'Doctors' && <VaccinesIcon />}
                 {item.page === 'Wallet' && <WalletIcon />}
                 {item.page === 'About' && <InfoIcon />}
               </ListItemIcon>
@@ -169,7 +182,7 @@ export default function TemporaryDrawer() {
         </ListItem>
       ))}
       {user === 'doctor' && NavItemUser.map((item, index) => (
-        <ListItem key={item.page} disablePadding onClick={() => Navigate(item.path)}>
+        <ListItem key={item.page} disablePadding onClick={item.page === 'Log Out' ? doctorLogOut : ()=>Navigate(item.path) }>
           <ListItemButton >
             <ListItemIcon style={{ color: '#fff' }}>
               {item.page === 'Profile' && <AccountCircleIcon />}

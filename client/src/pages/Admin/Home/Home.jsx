@@ -25,6 +25,8 @@ import AddDepartment from '../../../components/AdminComponents/AddDepartment/Add
 import Departments from '../../../components/AdminComponents/departmentTable/Departments'
 import DashboardAdmin from '../../../components/AdminComponents/Dashboard/DashboardAdmin'
 import { FaBuilding, FaRegChartBar, FaStethoscope, FaUsers } from 'react-icons/fa'
+import { FiLogOut } from 'react-icons/fi'
+
 import SalesReport from '../../../components/AdminComponents/SalesReport/SalesReport'
 import { useNavigate } from 'react-router-dom'
 
@@ -210,8 +212,9 @@ const adminLogOut = ()=>{
           ))}
         
         </List>
-        <button className='btn btn-danger me-auto ms-1' onClick={adminLogOut}>
+        <button className='btn text-primary py-1 me-auto ms-1 flex' onClick={adminLogOut}>
           Log Out
+            <FiLogOut className='my-auto ms-2'/>
          </button>
         <Divider />
         {/* <List>

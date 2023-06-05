@@ -280,7 +280,7 @@ export const saveGoogleUser = (req, res) => {
                                     response.logIn = true
                                     response.token = token
                                     res.status(200).json(response)
-                                })                 
+                                })
                         })
                 }
             })
@@ -616,7 +616,6 @@ export const payWithWallet = (req, res) => {
 export const cancelAppointment = (req, res) => {
     try {
         const appointmentId = req.query.appointmentId
-        console.log(appointmentId);
         appointmentModel
             .findOne({ _id: appointmentId })
             .then((appointment) => {
@@ -648,13 +647,42 @@ export const cancelAppointment = (req, res) => {
                                     })
                             })
                     })
- 
+
             })
-    } 
+    }
     catch (err) {
         res.status(500)
     }
 
+}
+
+
+export const getTopDep = (req, res) => {
+    try {
+        departmentModel.aggregate([
+            {
+                $project: {
+                    name: 1,
+                    commonDiseases: 1,
+                    imageUrl: 1,
+                    doctors: 1,
+                    list: 1,
+                    description: 1,
+                    doctorCount: { $size: "$doctors" }
+                }
+            },
+            {
+                $sort: { doctorCount: -1 }
+            },
+            {
+                $limit: 5
+            }
+        ]).then((departments) => {
+            res.status(200).json({ departments })
+        })
+    } catch (err) {
+        res.status(500)
+    }
 }
 
 

@@ -6,7 +6,8 @@ let token = localStorage.getItem('userToken')
 let headers = { authorization: token }
 export const fetchDoctors = createAsyncThunk('doctor/fetchDoctors', ({department,sort,filter,page,search}) => {
     return (
-        axios.get(`${userUrl}getDoctors?search=${search}&department=${department}&sort=${sort}&filter=${filter}&page=${page}`, { headers }).then((response) => {
+        axios.get(`${userUrl}getDoctors?search=${search}&department=${department}&sort=${sort}&filter=${filter}&page=${page}`, { headers })
+        .then((response) => {
             let result = {
                 data: response.data,
                 status: response.status

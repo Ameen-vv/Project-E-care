@@ -4,20 +4,27 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { fetchDepartments } from '../../redux/Slices/departmetnSlice'
 import './Departments.css'
+import { userUrl } from '../../../apiLinks/apiLinks'
+import { toast } from 'react-hot-toast'
 
 
 
 const Departments = () => {
-    const departmentsData = useSelector(state => state.department)
     const [selectedDepartment, setSelectedDepartment] = useState('');
+    const [loading,setLoading] = useState(false)
+    const [departments,setDepartments] = useState([])
     const Navigate = useNavigate()
-    const distpatch = useDispatch()
     useEffect(() => {
-        distpatch(fetchDepartments({ search: '' }))
+        setLoading(true)
+        axios.get(`${userUrl}getTopDep`).then((response) => {
+            setDepartments(response.data.departments)
+        }).catch((err) => {
+            err?.response?.status === 401 ? Navigate('/signIn') : toast.error('something wrong')
+        }).finally(()=>setLoading(false))
     }, [])
     useEffect(()=>{
-        setSelectedDepartment(departmentsData?.departments?.departments && departmentsData?.departments?.departments[0])
-    },[departmentsData.loading])
+        setSelectedDepartment(departments && departments[0])
+    },[departments])
     
     const handleDepartmentClick = (department) => {
         setSelectedDepartment(department);
@@ -25,14 +32,14 @@ const Departments = () => {
 
     return (
         <section className='departmentSection mt-5 '>
-            {departmentsData.loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+            {loading && <div className="fixed top-0 left-0 w-screen h-screen flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
                 <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
             </div>}
             <div className='w-100 flex justify-content-center mt-3'><h1 className='department-head'>Top Departments</h1></div>
             <div className="department-container">
                 <div className="department-list mt-2 text-sm">
                     <ul>
-                        {departmentsData?.departments?.departments?.slice(0, 4).map((department) => (
+                        {departments.slice(0, 4).map((department) => (
 
                             <li key={department.id} onClick={() => handleDepartmentClick(department)} className={selectedDepartment?._id === department._id ? "active" : ""}>
                                 {department.name}

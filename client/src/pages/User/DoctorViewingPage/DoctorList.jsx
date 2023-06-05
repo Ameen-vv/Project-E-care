@@ -20,7 +20,6 @@ const DoctorList = () => {
   const dispatch = useDispatch()
  
   useEffect(() => {
-    
     location?.state?.departmentId && setDepartment(location?.state?.departmentId)
     dispatch(fetchDoctors({ department, sort, filter, page, search }))
   }, [department, sort, filter, page, search])

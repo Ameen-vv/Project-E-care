@@ -23,7 +23,7 @@ const DoctorSinglePage = () => {
                 alt="Doctor's profile picture"
               />
               <div className="ml-12 mt-3 ">
-                <h1 className="text-xl font-semibold text-textBlue text-gray-900 mb-1 ">
+                <h1 className="text-xl font-semibold text-textBlue  mb-1 ">
                   Dr. {doctor?.fullName}
                 </h1>
                 <div>
